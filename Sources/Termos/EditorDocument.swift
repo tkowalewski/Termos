@@ -54,6 +54,7 @@ final class EditorDocument: Identifiable {
     }
 
     func save() throws {
+        trimTrailingWhitespace()
         let text = controller.text
         guard let data = text.data(using: encoding) ?? text.data(using: .utf8) else {
             throw EditorDocumentError.unreadable(url)
@@ -75,6 +76,24 @@ final class EditorDocument: Identifiable {
         diskModificationDate = Self.modificationDate(of: url)
         controller.setText(text)
         isDirty = false
+    }
+
+    private static let trailingWhitespace = try! NSRegularExpression(pattern: "[ \\t]+$", options: .anchorsMatchLines)
+
+    /// Removes spaces and tabs at line ends in the editor itself, as one undo step.
+    /// Markdown is left alone: two trailing spaces there are a line break.
+    private func trimTrailingWhitespace() {
+        guard !["md", "markdown"].contains(url.pathExtension.lowercased()),
+              let textView = controller.textView else { return }
+        let text = textView.string
+        let ranges = Self.trailingWhitespace
+            .matches(in: text, range: NSRange(location: 0, length: (text as NSString).length))
+            .map(\.range)
+        guard !ranges.isEmpty else { return }
+
+        textView.undoManager?.beginUndoGrouping()
+        textView.replaceCharacters(in: ranges, with: "")
+        textView.undoManager?.endUndoGrouping()
     }
 
     /// Records the current disk state as seen, so the user is not asked again.
