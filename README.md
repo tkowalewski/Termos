@@ -4,6 +4,12 @@ Termos is a macOS terminal with a built-in file browser and code editor.
 
 The main window is an ordinary terminal. When you need to look at or change a file, you open the file browser, which shows the terminal's current working directory. Click a file and it opens in an editor in place of the terminal. Several terminals can run side by side, and each one keeps its own open files.
 
+![A terminal with the file browser showing its working directory](screenshots/Termos1.png)
+
+![The editor with open tabs and syntax highlighting, next to the file browser](screenshots/Termos2.png)
+
+![Go to file (⌘P) over the terminal, listing files of the working directory](screenshots/Termos3.png)
+
 ## Features
 
 ### Terminals
