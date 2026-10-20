@@ -9,7 +9,7 @@ enum EditorAppearance {
         SourceEditorConfiguration(
             appearance: .init(theme: theme(for: appearance), font: font, wrapLines: false),
             // Tab and automatic indentation insert spaces, also in files indented with tabs.
-            behavior: .init(indentOption: .spaces(count: 4)),
+            behavior: .init(indentOption: .spaces(count: 2)),
             layout: .init(),
             peripherals: .init(showMinimap: false)
         )

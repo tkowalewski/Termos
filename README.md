@@ -33,7 +33,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - Opens in place of the terminal. The terminal keeps running behind it.
 - Syntax highlighting (tree-sitter) with Xcode-like light and dark themes.
 - Long lines do not wrap; scroll sideways to see them.
-- Indents with four spaces: <kbd>Tab</kbd> and the automatic indentation after <kbd>Return</kbd> insert spaces, not tab characters.
+- Indents with two spaces: <kbd>Tab</kbd> and the automatic indentation after <kbd>Return</kbd> insert spaces, not tab characters.
 - Tabs for open files. A dot on a tab marks unsaved changes.
 - Undo history and cursor position are kept per file when switching tabs.
 - Detects changes made on disk, for example from the terminal. Unchanged files reload silently; if you have unsaved edits, Termos asks first.
