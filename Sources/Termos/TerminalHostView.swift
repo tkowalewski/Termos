@@ -22,19 +22,27 @@ struct TerminalHostView: NSViewRepresentable {
 final class TerminalContainerView: NSView {
     static let padding: CGFloat = 10
 
-    private weak var current: TerminalView?
+    private weak var current: LocalProcessTerminalView?
     private var lastFocusRequest = 0
+    private var keyMonitor: Any?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            self?.handleWordJump(event) ?? event
+        }
+    }
+
+    deinit {
+        if let keyMonitor { NSEvent.removeMonitor(keyMonitor) }
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) is not used")
     }
 
-    func show(_ terminalView: TerminalView) {
+    func show(_ terminalView: LocalProcessTerminalView) {
         guard current !== terminalView else { return }
 
         current?.removeFromSuperview()
@@ -59,6 +67,24 @@ final class TerminalContainerView: NSView {
         guard request != lastFocusRequest else { return }
         lastFocusRequest = request
         focusTerminal()
+    }
+
+    /// Option+Left/Right jump by word, like Terminal.app.
+    ///
+    /// With Option no longer acting as Meta (see `TerminalSession`), SwiftTerm
+    /// sends nothing for these keys, so the Emacs word motions are sent here.
+    private func handleWordJump(_ event: NSEvent) -> NSEvent? {
+        guard let terminalView = current, terminalView.window?.firstResponder === terminalView,
+              event.modifierFlags.intersection([.command, .option, .control, .shift]) == .option,
+              let key = event.charactersIgnoringModifiers?.unicodeScalars.first else { return event }
+        let sequence: [UInt8]
+        switch Int(key.value) {
+        case NSLeftArrowFunctionKey: sequence = [0x1B, 0x62]  // ESC b
+        case NSRightArrowFunctionKey: sequence = [0x1B, 0x66]  // ESC f
+        default: return event
+        }
+        terminalView.send(source: terminalView, data: sequence[...])
+        return nil
     }
 
     override func viewDidChangeEffectiveAppearance() {

@@ -28,6 +28,8 @@ final class TerminalSession: Identifiable {
         terminalView = LocalProcessTerminalView(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
         terminalView.font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
         terminalView.processDelegate = self
+        // Option types characters (e.g. Option+L = "ł" on the Polish layout) instead of acting as Meta.
+        terminalView.optionAsMetaKey = false
 
         let directory = startDirectory?.path ?? FileManager.default.homeDirectoryForCurrentUser.path
         terminalView.startProcess(
