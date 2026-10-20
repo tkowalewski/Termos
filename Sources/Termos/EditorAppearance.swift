@@ -8,7 +8,8 @@ enum EditorAppearance {
     static func configuration(for appearance: NSAppearance) -> SourceEditorConfiguration {
         SourceEditorConfiguration(
             appearance: .init(theme: theme(for: appearance), font: font, wrapLines: false),
-            behavior: .init(),
+            // Tab and automatic indentation insert spaces, also in files indented with tabs.
+            behavior: .init(indentOption: .spaces(count: 4)),
             layout: .init(),
             peripherals: .init(showMinimap: false)
         )
