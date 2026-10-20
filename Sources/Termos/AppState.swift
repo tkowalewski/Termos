@@ -77,12 +77,12 @@ final class AppState {
 
     // MARK: Quick open
 
-    /// Cmd+P: searches the active terminal's working directory. Works in editor mode
-    /// and, in terminal mode, while the file browser is shown.
+    /// Cmd+P: searches the active terminal's working directory, from the terminal or
+    /// the editor. The chosen file opens in the editor.
     func toggleQuickOpen() {
         if quickOpen != nil {
             dismissQuickOpen()
-        } else if isEditorVisible || isFileBrowserVisible, let root = activeSession?.currentDirectory() {
+        } else if let root = activeSession?.currentDirectory() {
             quickOpen = QuickOpenModel(root: root)
         }
     }

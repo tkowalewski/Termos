@@ -46,7 +46,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - <kbd>Esc</kbd> first collapses multiple cursors to one. The next <kbd>Esc</kbd> returns to the terminal.
 
 ### Go to file
-- <kbd>⌘P</kbd> opens a fuzzy finder for the active terminal's working directory. It works in the editor, and in the terminal while the file browser is visible.
+- <kbd>⌘P</kbd> opens a fuzzy finder for the active terminal's working directory. It works in the terminal and in the editor; the chosen file opens in the editor.
 - In a git repository it lists files with `git ls-files`, so `.gitignore` is respected. Elsewhere it walks the directory with the file browser's filters.
 - Ranking favours matches in the file name, at word boundaries and in consecutive characters.
 
@@ -65,7 +65,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | Shortcut | Action |
 | --- | --- |
 | <kbd>⌘B</kbd> | Show or hide the file browser |
-| <kbd>⌘P</kbd> | Go to file (in the editor, or while the file browser is visible) |
+| <kbd>⌘P</kbd> | Go to file |
 | <kbd>⌘`</kbd> | Switch between the terminal and the editor |
 | <kbd>⌘S</kbd> | Save the file |
 | <kbd>⌘F</kbd> | Find in file |
