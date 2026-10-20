@@ -60,7 +60,7 @@ struct ContentView: View {
             }
         }
         .frame(minWidth: 640, minHeight: 400)
-        .navigationTitle(state.activeSession?.title ?? "Termos")
+        .navigationTitle(state.activeSession?.displayTitle ?? "Termos")
     }
 }
 

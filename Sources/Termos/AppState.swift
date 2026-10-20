@@ -217,7 +217,7 @@ final class AppState {
     }
 
     /// Hands keyboard focus back to whatever fills the main area.
-    private func requestMainFocus() {
+    func requestMainFocus() {
         mainFocusRequest += 1
     }
 
@@ -234,6 +234,12 @@ final class AppState {
         }
         sessions.append(session)
         activeSessionID = session.id
+    }
+
+    /// Names a terminal in the list. An empty name goes back to the title set by the shell.
+    func rename(_ session: TerminalSession, to name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        session.customTitle = trimmed.isEmpty ? nil : trimmed
     }
 
     func closeActiveSession() {

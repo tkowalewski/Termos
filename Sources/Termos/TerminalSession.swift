@@ -10,7 +10,14 @@ import SwiftTerm
 @Observable
 final class TerminalSession: Identifiable {
     let id = UUID()
+    /// Title set by the shell or the running program.
     private(set) var title: String
+    /// Name given by the user in the terminal list. Overrides `title` while set.
+    var customTitle: String?
+
+    var displayTitle: String {
+        customTitle ?? title
+    }
 
     /// Last directory reported by the shell through OSC 7, if it reports one.
     private(set) var reportedDirectory: URL?
