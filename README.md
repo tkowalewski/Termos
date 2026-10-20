@@ -32,6 +32,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 ### Editor
 - Opens in place of the terminal. The terminal keeps running behind it.
 - Syntax highlighting (tree-sitter) with Xcode-like light and dark themes.
+- Long lines do not wrap; scroll sideways to see them.
 - Tabs for open files. A dot on a tab marks unsaved changes.
 - Undo history and cursor position are kept per file when switching tabs.
 - Detects changes made on disk, for example from the terminal. Unchanged files reload silently; if you have unsaved edits, Termos asks first.
@@ -110,7 +111,7 @@ swift scripts/make-icon.swift
 ## Built with
 
 - [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm): terminal emulation
-- [CodeEditSourceEditor](https://github.com/CodeEditApp/CodeEditSourceEditor) and [CodeEditTextView](https://github.com/CodeEditApp/CodeEditTextView): the editor, including multiple selections
+- [CodeEditSourceEditor](https://github.com/CodeEditApp/CodeEditSourceEditor) and [CodeEditTextView](https://github.com/CodeEditApp/CodeEditTextView): the editor, including multiple selections. CodeEditTextView is included in `Vendor/` with a fix for horizontal scrolling.
 - [CodeEditLanguages](https://github.com/CodeEditApp/CodeEditLanguages): tree-sitter grammars for syntax highlighting
 
 ## Project layout
@@ -119,6 +120,7 @@ swift scripts/make-icon.swift
 | --- | --- |
 | `Sources/Termos/` | The app: state (`AppState`), terminals, file browser, editor, multiple cursors, go to file |
 | `Sources/Termos/Resources/` | App icon |
+| `Vendor/CodeEditTextView/` | Patched copy of CodeEditTextView (see its README) |
 | `scripts/bundle.sh` | Builds `build/Termos.app` |
 | `scripts/make-icon.swift` | Draws the app icon |
 | `PLAN.txt` | Original implementation plan (in Polish) |

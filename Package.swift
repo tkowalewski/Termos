@@ -11,6 +11,8 @@ let package = Package(
         .package(url: "https://github.com/migueldeicaza/SwiftTerm", from: "1.9.0"),
         .package(url: "https://github.com/CodeEditApp/CodeEditSourceEditor", from: "0.15.2"),
         .package(url: "https://github.com/CodeEditApp/CodeEditLanguages", from: "0.1.20"),
+        // Patched copy that replaces the version CodeEditSourceEditor depends on (see its README).
+        .package(path: "Vendor/CodeEditTextView"),
     ],
     targets: [
         .executableTarget(
