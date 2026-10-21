@@ -15,18 +15,24 @@ IDENTITY="${TERMOS_SIGN_IDENTITY:--}"
 VERSION="${TERMOS_VERSION:-0.1.0}"
 BUILD="${TERMOS_BUILD:-1}"
 
-if [ "$CONFIG" = release ]; then
-    ARCH_FLAGS="--arch arm64 --arch x86_64"
-else
-    ARCH_FLAGS=""
-fi
-
-swift build --package-path "$ROOT" -c "$CONFIG" $ARCH_FLAGS
-BIN="$(swift build --package-path "$ROOT" -c "$CONFIG" $ARCH_FLAGS --show-bin-path)/Termos"
-
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
-cp "$BIN" "$APP/Contents/MacOS/Termos"
+
+if [ "$CONFIG" = release ]; then
+    # One build per architecture, joined with lipo: with several --arch flags, Swift 6.2
+    # falls back to XCBuild, which cannot run the packages' build plugins.
+    # Separate scratch paths keep the two builds from overwriting each other.
+    for arch in arm64 x86_64; do
+        swift build --package-path "$ROOT" -c release --arch "$arch" --scratch-path "$ROOT/.build/release-$arch"
+    done
+    BIN="$(swift build --package-path "$ROOT" -c release --arch arm64 --scratch-path "$ROOT/.build/release-arm64" --show-bin-path)/Termos"
+    BIN_X86="$(swift build --package-path "$ROOT" -c release --arch x86_64 --scratch-path "$ROOT/.build/release-x86_64" --show-bin-path)/Termos"
+    lipo -create "$BIN" "$BIN_X86" -output "$APP/Contents/MacOS/Termos"
+else
+    swift build --package-path "$ROOT" -c debug
+    BIN="$(swift build --package-path "$ROOT" -c debug --show-bin-path)/Termos"
+    cp "$BIN" "$APP/Contents/MacOS/Termos"
+fi
 
 cp "$ROOT/Sources/Termos/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 
