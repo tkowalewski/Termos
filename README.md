@@ -93,14 +93,24 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 
 ## Building
 
-Requirements: macOS 14 or later, Xcode 16 or later (Swift 6).
+Requirements: macOS 14 or later to run. Building needs Xcode 26 or later
+(Swift 6.2), because SwiftTerm and swift-collections require Swift tools 6.2.
 
 ```sh
 swift run                  # build and run from the command line
-scripts/bundle.sh          # build build/Termos.app (release)
-scripts/bundle.sh debug    # build build/Termos.app (debug)
+scripts/bundle.sh          # build build/Termos.app (release, arm64 + x86_64)
+scripts/bundle.sh debug    # build build/Termos.app (debug, this Mac only)
 open build/Termos.app
 ```
+
+`bundle.sh` signs ad-hoc, which is enough on the Mac that built it. To run Termos on other Macs, build a signed and notarized zip with a Developer ID Application certificate:
+
+```sh
+xcrun notarytool store-credentials termos --apple-id you@example.com --team-id TEAMID   # once
+TERMOS_SIGN_IDENTITY="Developer ID Application: Name (TEAMID)" scripts/release.sh
+```
+
+This produces `build/Termos.zip`, which opens without Gatekeeper warnings on macOS 14 or later.
 
 You can also open `Package.swift` in Xcode.
 
@@ -124,5 +134,6 @@ swift scripts/make-icon.swift
 | `Sources/Termos/Resources/` | App icon |
 | `Vendor/CodeEditTextView/` | Patched copy of CodeEditTextView (see its README) |
 | `scripts/bundle.sh` | Builds `build/Termos.app` |
+| `scripts/release.sh` | Builds a signed, notarized `build/Termos.zip` |
 | `scripts/make-icon.swift` | Draws the app icon |
 | `PLAN.txt` | Original implementation plan (in Polish) |
