@@ -15,6 +15,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 ### Terminals
 - Multiple terminals, listed in a sidebar on the left. Each runs your login shell (`$SHELL`, started as a login shell like Terminal.app does).
 - Terminals keep running in the background, with their scrollback, while you work in another one.
+- Each terminal keeps 10,000 lines of scrollback.
 - A new terminal opens in the working directory of the current one.
 - Click the name of the active terminal (or use Rename Terminal in its context menu) to rename it. An empty name brings back the title set by the shell.
 - <kbd>⌥</kbd> types characters from your keyboard layout (e.g. <kbd>⌥L</kbd> gives `ł` on the Polish layout) instead of acting as Meta. <kbd>⌥←</kbd> / <kbd>⌥→</kbd> still jump by word.

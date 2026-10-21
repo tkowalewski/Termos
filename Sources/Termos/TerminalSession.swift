@@ -37,6 +37,8 @@ final class TerminalSession: Identifiable {
         terminalView.processDelegate = self
         // Option types characters (e.g. Option+L = "ł" on the Polish layout) instead of acting as Meta.
         terminalView.optionAsMetaKey = false
+        // SwiftTerm keeps only 500 lines by default.
+        terminalView.changeScrollback(10_000)
 
         let directory = startDirectory?.path ?? FileManager.default.homeDirectoryForCurrentUser.path
         terminalView.startProcess(
