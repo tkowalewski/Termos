@@ -18,23 +18,19 @@ permissions:
 
 jobs:
   release:
-    runs-on: macos-26
+    # The macos-26 image has only Xcode 26; this preview image has Xcode 27.
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v4
 
       - name: Choose keychain path
         run: echo "KEYCHAIN=$RUNNER_TEMP/signing.keychain-db" >> "$GITHUB_ENV"
 
-      # Universal builds need Xcode 27 (see scripts/bundle.sh); the image defaults to Xcode 26.
-      - name: Select Xcode 27
+      # Universal builds need Xcode 27 (see scripts/bundle.sh). Pinned to a release:
+      # the image defaults to 27.0 and also carries betas.
+      - name: Select Xcode 27.1
         run: |
-          ls -d /Applications/Xcode*.app
-          XCODE="$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -1)"
-          if [ -z "$XCODE" ]; then
-            echo "No Xcode 27 on this runner image." >&2
-            exit 1
-          fi
-          sudo xcode-select -s "$XCODE/Contents/Developer"
+          sudo xcode-select -s /Applications/Xcode_27.1.app/Contents/Developer
           xcodebuild -version
           swift --version
 
