@@ -104,7 +104,7 @@ scripts/bundle.sh debug    # build build/Termos.app (debug, this Mac only)
 open build/Termos.app
 ```
 
-`bundle.sh` signs ad-hoc, which is enough on the Mac that built it. To run Termos on other Macs, build a signed and notarized zip with a Developer ID Application certificate:
+Release builds are universal (Apple silicon and Intel) and need Xcode 27: Xcode 26 cannot build both architectures with the packages' build plugins and asset catalogs. `bundle.sh` signs ad-hoc, which is enough on the Mac that built it. To run Termos on other Macs, build a signed and notarized zip with a Developer ID Application certificate:
 
 ```sh
 xcrun notarytool store-credentials termos --apple-id you@example.com --team-id TEAMID   # once

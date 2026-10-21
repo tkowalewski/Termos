@@ -25,8 +25,18 @@ jobs:
       - name: Choose keychain path
         run: echo "KEYCHAIN=$RUNNER_TEMP/signing.keychain-db" >> "$GITHUB_ENV"
 
-      - name: Show Xcode version
-        run: xcodebuild -version
+      # Universal builds need Xcode 27 (see scripts/bundle.sh); the image defaults to Xcode 26.
+      - name: Select Xcode 27
+        run: |
+          ls -d /Applications/Xcode*.app
+          XCODE="$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -1)"
+          if [ -z "$XCODE" ]; then
+            echo "No Xcode 27 on this runner image." >&2
+            exit 1
+          fi
+          sudo xcode-select -s "$XCODE/Contents/Developer"
+          xcodebuild -version
+          swift --version
 
       - name: Import signing certificate
         env:
