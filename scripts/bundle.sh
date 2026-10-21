@@ -4,13 +4,16 @@
 #
 # Release builds are universal (arm64 + x86_64); debug builds are for this Mac only.
 # Signs with $TERMOS_SIGN_IDENTITY (e.g. "Developer ID Application: Name (TEAMID)"),
-# or ad-hoc when it is not set.
+# or ad-hoc when it is not set. $TERMOS_VERSION and $TERMOS_BUILD set the version shown
+# in Finder (default: 0.1.0, build 1).
 set -eu
 
 CONFIG="${1:-release}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP="$ROOT/build/Termos.app"
 IDENTITY="${TERMOS_SIGN_IDENTITY:--}"
+VERSION="${TERMOS_VERSION:-0.1.0}"
+BUILD="${TERMOS_BUILD:-1}"
 
 if [ "$CONFIG" = release ]; then
     ARCH_FLAGS="--arch arm64 --arch x86_64"
@@ -52,8 +55,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleExecutable</key><string>Termos</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleIconFile</key><string>AppIcon</string>
-    <key>CFBundleShortVersionString</key><string>0.1.0</string>
-    <key>CFBundleVersion</key><string>1</string>
+    <key>CFBundleShortVersionString</key><string>$VERSION</string>
+    <key>CFBundleVersion</key><string>$BUILD</string>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>NSHighResolutionCapable</key><true/>
     <key>NSPrincipalClass</key><string>NSApplication</string>

@@ -113,6 +113,16 @@ TERMOS_SIGN_IDENTITY="Developer ID Application: Name (TEAMID)" scripts/release.s
 
 This produces `build/Termos.zip`, which opens without Gatekeeper warnings on macOS 14 or later.
 
+### Releases
+
+Pushing a version tag builds, signs and notarizes Termos on GitHub Actions and publishes `Termos-<version>.zip` as a GitHub release:
+
+```sh
+git tag v0.2.0 && git push origin v0.2.0
+```
+
+The workflow (`.github/workflows/release.yml`) lists the repository secrets it needs.
+
 You can also open `Package.swift` in Xcode.
 
 The app icon is drawn by a script. To regenerate `Sources/Termos/Resources/AppIcon.icns` after changing it:
@@ -136,5 +146,6 @@ swift scripts/make-icon.swift
 | `Vendor/CodeEditTextView/` | Patched copy of CodeEditTextView (see its README) |
 | `scripts/bundle.sh` | Builds `build/Termos.app` |
 | `scripts/release.sh` | Builds a signed, notarized `build/Termos.zip` |
+| `.github/workflows/release.yml` | Publishes a GitHub release for each `v*` tag |
 | `scripts/make-icon.swift` | Draws the app icon |
 | `PLAN.txt` | Original implementation plan (in Polish) |

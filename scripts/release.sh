@@ -5,12 +5,18 @@
 # Needs notarytool credentials stored once in the keychain under $TERMOS_NOTARY_PROFILE
 # (default: termos):
 #   xcrun notarytool store-credentials termos --apple-id you@example.com --team-id TEAMID
+# $TERMOS_NOTARY_KEYCHAIN names a keychain other than the default one that holds the profile.
 set -eu
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP="$ROOT/build/Termos.app"
 ZIP="$ROOT/build/Termos.zip"
 PROFILE="${TERMOS_NOTARY_PROFILE:-termos}"
+if [ -n "${TERMOS_NOTARY_KEYCHAIN:-}" ]; then
+    set -- --keychain "$TERMOS_NOTARY_KEYCHAIN"
+else
+    set --
+fi
 
 case "${TERMOS_SIGN_IDENTITY:-}" in
     "Developer ID Application:"*) ;;
@@ -21,7 +27,7 @@ esac
 
 rm -f "$ZIP"
 ditto -c -k --keepParent "$APP" "$ZIP"
-xcrun notarytool submit "$ZIP" --keychain-profile "$PROFILE" --wait
+xcrun notarytool submit "$ZIP" --keychain-profile "$PROFILE" "$@" --wait
 
 # Attach the notarization ticket so the app also opens offline, then zip the stapled app.
 xcrun stapler staple "$APP"
