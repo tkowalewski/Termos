@@ -24,6 +24,8 @@ final class TerminalSession: Identifiable {
 
     /// Files this terminal has open, shown in place of the terminal when visible.
     let editor = EditorWorkspace()
+    /// Each terminal shows or hides its own file browser (Cmd+B); hidden by default.
+    var isFileBrowserVisible = false
 
     @ObservationIgnored let terminalView: LocalProcessTerminalView
     @ObservationIgnored var onExit: ((TerminalSession) -> Void)?

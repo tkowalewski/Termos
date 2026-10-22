@@ -7,7 +7,7 @@ final class AppState {
     private(set) var sessions: [TerminalSession] = []
     var activeSessionID: TerminalSession.ID? {
         didSet {
-            refreshFileBrowserRoot()
+            updateDirectoryPolling()
             quickOpen = nil
         }
     }
@@ -16,8 +16,10 @@ final class AppState {
         sessions.first { $0.id == activeSessionID }
     }
 
-    /// The file browser is hidden by default and toggled with Cmd+B.
-    private(set) var isFileBrowserVisible = false
+    /// Whether the active terminal shows its file browser.
+    var isFileBrowserVisible: Bool {
+        activeSession?.isFileBrowserVisible == true
+    }
     /// Working directory of the active terminal, shown in the file browser.
     private(set) var fileBrowserRoot: URL?
     /// Bumped whenever the terminal or editor should take keyboard focus back.
@@ -50,22 +52,30 @@ final class AppState {
     }
 
     func showFileBrowser() {
-        guard !isFileBrowserVisible else { return }
-        isFileBrowserVisible = true
-        refreshFileBrowserRoot()
-
-        // Follows `cd` in the terminal while the browser is visible, and only then.
-        directoryPollTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.refreshFileBrowserRoot() }
-        }
+        guard let session = activeSession, !session.isFileBrowserVisible else { return }
+        session.isFileBrowserVisible = true
+        updateDirectoryPolling()
     }
 
     func hideFileBrowser() {
-        guard isFileBrowserVisible else { return }
-        isFileBrowserVisible = false
-        directoryPollTimer?.invalidate()
-        directoryPollTimer = nil
+        guard let session = activeSession, session.isFileBrowserVisible else { return }
+        session.isFileBrowserVisible = false
+        updateDirectoryPolling()
         requestMainFocus()
+    }
+
+    /// Follows `cd` in the active terminal while its browser is visible, and only then.
+    private func updateDirectoryPolling() {
+        guard isFileBrowserVisible else {
+            directoryPollTimer?.invalidate()
+            directoryPollTimer = nil
+            return
+        }
+        refreshFileBrowserRoot()
+        guard directoryPollTimer == nil else { return }
+        directoryPollTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.refreshFileBrowserRoot() }
+        }
     }
 
     private func refreshFileBrowserRoot() {
