@@ -6,6 +6,8 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-22
+
 ### Added
 - New file (<kbd>⌘N</kbd>) opens an empty, untitled tab in the editor. The first save asks where to put it, starting in the terminal's working directory.
 - A status bar below the editor shows the path of the file, relative to the terminal's working directory. Click the file icon next to it to copy the path.
@@ -29,5 +31,6 @@ First release.
 - Go to file (<kbd>⌘P</kbd>), from the terminal and the editor.
 - Universal (Apple silicon and Intel), signed and notarized builds, published as a GitHub release for each version tag.
 
-[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/tkowalewski/Termos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tkowalewski/Termos/releases/tag/v0.1.0
