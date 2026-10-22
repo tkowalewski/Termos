@@ -36,6 +36,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - Long lines do not wrap; scroll sideways to see them.
 - Indents with two spaces: <kbd>Tab</kbd> and the automatic indentation after <kbd>Return</kbd> insert spaces, not tab characters.
 - Tabs for open files. A dot on a tab marks unsaved changes.
+- <kbd>⌘N</kbd> opens a new, untitled file. The first save asks where to put it, starting in the terminal's working directory; syntax highlighting follows the chosen file name.
 - Undo history and cursor position are kept per file when switching tabs.
 - Saving removes spaces and tabs at the ends of lines, except in Markdown files, where two trailing spaces mean a line break. <kbd>⌘Z</kbd> brings them back in one step.
 - Detects changes made on disk, for example from the terminal. Unchanged files reload silently; if you have unsaved edits, Termos asks first.
@@ -69,6 +70,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | Shortcut | Action |
 | --- | --- |
 | <kbd>⌘B</kbd> | Show or hide the file browser of the active terminal |
+| <kbd>⌘N</kbd> | New file |
 | <kbd>⌘P</kbd> | Go to file |
 | <kbd>⌘`</kbd> | Switch between the terminal and the editor |
 | <kbd>⌘S</kbd> | Save the file |

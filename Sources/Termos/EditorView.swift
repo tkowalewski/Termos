@@ -1,6 +1,7 @@
 import AppKit
 import CodeEditSourceEditor
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Tabs of the open files above the editor of the active one.
 struct EditorView: View {
@@ -55,7 +56,8 @@ private struct EditorTab: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Image(nsImage: NSWorkspace.shared.icon(forFile: document.url.path))
+            Image(nsImage: document.url.map { NSWorkspace.shared.icon(forFile: $0.path) }
+                ?? NSWorkspace.shared.icon(for: .plainText))
                 .resizable()
                 .frame(width: 14, height: 14)
             Text(document.name)
@@ -75,7 +77,7 @@ private struct EditorTab: View {
         .contentShape(Rectangle())
         .onTapGesture(perform: onSelect)
         .onHover { isHovered = $0 }
-        .help(document.url.path)
+        .help(document.url?.path ?? document.name)
     }
 }
 

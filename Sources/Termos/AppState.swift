@@ -129,6 +129,13 @@ final class AppState {
         }
     }
 
+    /// Cmd+N: a new, empty file in the editor. Where it goes is asked on the first save.
+    func newDocument() {
+        guard let editor = activeSession?.editor else { return }
+        editor.newDocument()
+        mainFocusRequest += 1
+    }
+
     func selectDocument(_ document: EditorDocument) {
         activeSession?.editor.activeDocumentID = document.id
         checkActiveDocumentOnDisk()
@@ -181,12 +188,26 @@ final class AppState {
     @discardableResult
     private func save(_ document: EditorDocument) -> Bool {
         do {
-            try document.save()
+            if document.url == nil {
+                guard let url = askWhereToSave(document) else { return false }
+                try document.save(to: url)
+            } else {
+                try document.save()
+            }
             return true
         } catch {
             Alerts.show(error)
             return false
         }
+    }
+
+    /// Save panel for a new file, starting in the active terminal's working directory.
+    private func askWhereToSave(_ document: EditorDocument) -> URL? {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = document.name
+        panel.directoryURL = activeSession?.currentDirectory()
+        panel.canCreateDirectories = true
+        return panel.runModal() == .OK ? panel.url : nil
     }
 
     /// Asks before discarding unsaved files. Returns false when the user cancels.

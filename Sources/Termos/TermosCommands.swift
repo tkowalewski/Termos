@@ -15,6 +15,8 @@ struct TermosCommands: Commands {
         CommandGroup(replacing: .newItem) {
             Button("New Terminal") { state.newSession() }
                 .keyboardShortcut("t")
+            Button("New File") { state.newDocument() }
+                .keyboardShortcut("n")
             Button("Close") { state.closeActiveItem() }
                 .keyboardShortcut("w")
         }

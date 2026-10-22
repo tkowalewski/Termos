@@ -31,6 +31,16 @@ final class EditorWorkspace {
         isVisible = true
     }
 
+    /// Opens an empty, untitled file: "Untitled", then "Untitled 2" and so on.
+    func newDocument() {
+        let names = Set(documents.filter { $0.url == nil }.map(\.name))
+        let name = (1...).lazy.map { $0 == 1 ? "Untitled" : "Untitled \($0)" }.first { !names.contains($0) }!
+        let document = EditorDocument(untitledName: name)
+        documents.append(document)
+        activeDocumentID = document.id
+        isVisible = true
+    }
+
     func close(_ document: EditorDocument) {
         guard let index = documents.firstIndex(where: { $0.id == document.id }) else { return }
         documents.remove(at: index)

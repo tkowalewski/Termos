@@ -19,14 +19,18 @@ enum EditorDocumentError: LocalizedError {
 
 /// A file open in the editor, with its own editor view controller, so undo
 /// history and cursor positions survive switching between files.
+///
+/// A new file (Cmd+N) has no URL until it is first saved.
 @MainActor
 @Observable
 final class EditorDocument: Identifiable {
     static let maximumSize = 10 * 1024 * 1024
 
     let id = UUID()
-    let url: URL
+    private(set) var url: URL?
     private(set) var isDirty = false
+    /// Shown in place of the file name while the document has no URL.
+    @ObservationIgnored private let untitledName: String
 
     @ObservationIgnored let controller: TextViewController
     @ObservationIgnored let multiCursor: MultiCursorController
@@ -34,17 +38,27 @@ final class EditorDocument: Identifiable {
     @ObservationIgnored private var encoding: String.Encoding
     @ObservationIgnored private var diskModificationDate: Date?
 
-    var name: String { url.lastPathComponent }
+    var name: String { url?.lastPathComponent ?? untitledName }
 
-    init(url: URL) throws {
+    convenience init(url: URL) throws {
         let (text, encoding) = try Self.read(url)
+        self.init(url: url, untitledName: url.lastPathComponent, text: text, encoding: encoding)
+    }
+
+    /// An empty document that is not on disk yet.
+    convenience init(untitledName: String) {
+        self.init(url: nil, untitledName: untitledName, text: "", encoding: .utf8)
+    }
+
+    private init(url: URL?, untitledName: String, text: String, encoding: String.Encoding) {
         self.url = url
+        self.untitledName = untitledName
         self.encoding = encoding
-        diskModificationDate = Self.modificationDate(of: url)
+        diskModificationDate = url.flatMap(Self.modificationDate(of:))
 
         controller = TextViewController(
             string: text,
-            language: CodeLanguage.detectLanguageFrom(url: url, prefixBuffer: String(text.prefix(256))),
+            language: url.map { CodeLanguage.detectLanguageFrom(url: $0, prefixBuffer: String(text.prefix(256))) } ?? .default,
             configuration: EditorAppearance.configuration(for: NSApp.effectiveAppearance),
             cursorPositions: [CursorPosition(line: 1, column: 1)],
             coordinators: [changeTracker]
@@ -53,24 +67,32 @@ final class EditorDocument: Identifiable {
         changeTracker.onChange = { [weak self] in self?.isDirty = true }
     }
 
-    func save() throws {
-        trimTrailingWhitespace()
+    /// Writes the file. `destination` gives an untitled document its location;
+    /// the language is then detected from the new file name.
+    func save(to destination: URL? = nil) throws {
+        guard let target = destination ?? url else { return }
+        trimTrailingWhitespace(fileExtension: target.pathExtension)
         let text = controller.text
         guard let data = text.data(using: encoding) ?? text.data(using: .utf8) else {
-            throw EditorDocumentError.unreadable(url)
+            throw EditorDocumentError.unreadable(target)
         }
-        try data.write(to: url, options: .atomic)
-        diskModificationDate = Self.modificationDate(of: url)
+        try data.write(to: target, options: .atomic)
+        if target != url {
+            url = target
+            controller.language = CodeLanguage.detectLanguageFrom(url: target, prefixBuffer: String(text.prefix(256)))
+        }
+        diskModificationDate = Self.modificationDate(of: target)
         isDirty = false
     }
 
     /// Whether the file on disk changed since it was opened, saved or reloaded here.
     var changedOnDisk: Bool {
-        guard let current = Self.modificationDate(of: url) else { return false }
+        guard let url, let current = Self.modificationDate(of: url) else { return false }
         return current != diskModificationDate
     }
 
     func reload() throws {
+        guard let url else { return }
         let (text, encoding) = try Self.read(url)
         self.encoding = encoding
         diskModificationDate = Self.modificationDate(of: url)
@@ -82,8 +104,8 @@ final class EditorDocument: Identifiable {
 
     /// Removes spaces and tabs at line ends in the editor itself, as one undo step.
     /// Markdown is left alone: two trailing spaces there are a line break.
-    private func trimTrailingWhitespace() {
-        guard !["md", "markdown"].contains(url.pathExtension.lowercased()),
+    private func trimTrailingWhitespace(fileExtension: String) {
+        guard !["md", "markdown"].contains(fileExtension.lowercased()),
               let textView = controller.textView else { return }
         let text = textView.string
         let ranges = Self.trailingWhitespace
@@ -98,6 +120,7 @@ final class EditorDocument: Identifiable {
 
     /// Records the current disk state as seen, so the user is not asked again.
     func ignoreDiskChange() {
+        guard let url else { return }
         diskModificationDate = Self.modificationDate(of: url)
     }
 
