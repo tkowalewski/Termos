@@ -22,9 +22,9 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - Typing `exit` in the shell closes its terminal. Closing the last terminal quits the app.
 
 ### File browser
-- Hidden by default. Toggle it with <kbd>⌘B</kbd>.
+- Hidden by default. Toggle it with <kbd>⌘B</kbd>. Each terminal shows or hides its own file browser.
 - Shows the working directory of the active terminal, read straight from the shell process, so it works with any shell and needs no shell configuration.
-- While visible, it follows `cd` in the terminal and switches with the active terminal.
+- While visible, it follows `cd` in the terminal.
 - Updates live when files are created, deleted or renamed on disk.
 - Remembers which folders were expanded for each directory.
 - Hides `.git`, `node_modules` and `.DS_Store`.
@@ -68,7 +68,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 ### Files and editor
 | Shortcut | Action |
 | --- | --- |
-| <kbd>⌘B</kbd> | Show or hide the file browser |
+| <kbd>⌘B</kbd> | Show or hide the file browser of the active terminal |
 | <kbd>⌘P</kbd> | Go to file |
 | <kbd>⌘`</kbd> | Switch between the terminal and the editor |
 | <kbd>⌘S</kbd> | Save the file |
@@ -121,6 +121,8 @@ Pushing a version tag builds, signs and notarizes Termos on GitHub Actions and p
 git tag v0.2.0 && git push origin v0.2.0
 ```
 
+Before tagging, move the entries under *Unreleased* in `CHANGELOG.md` to a section for the new version.
+
 The workflow (`.github/workflows/release.yml`) lists the repository secrets it needs.
 
 You can also open `Package.swift` in Xcode.
@@ -148,4 +150,5 @@ swift scripts/make-icon.swift
 | `scripts/release.sh` | Builds a signed, notarized `build/Termos.zip` |
 | `.github/workflows/release.yml` | Publishes a GitHub release for each `v*` tag |
 | `scripts/make-icon.swift` | Draws the app icon |
+| `CHANGELOG.md` | Notable changes in each version |
 | `PLAN.txt` | Original implementation plan (in Polish) |
