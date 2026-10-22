@@ -8,6 +8,7 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ### Added
 - New file (<kbd>⌘N</kbd>) opens an empty, untitled tab in the editor. The first save asks where to put it, starting in the terminal's working directory.
+- A status bar below the editor shows the path of the file, relative to the terminal's working directory. Click the file icon next to it to copy the path.
 
 ### Changed
 - Each terminal shows or hides its own file browser. <kbd>⌘B</kbd> toggles it for the active terminal only, and switching terminals brings back that terminal's choice.

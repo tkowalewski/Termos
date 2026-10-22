@@ -2,6 +2,7 @@ import AppKit
 import CodeEditLanguages
 import CodeEditSourceEditor
 import Observation
+import UniformTypeIdentifiers
 
 enum EditorDocumentError: LocalizedError {
     case tooLarge(URL)
@@ -39,6 +40,10 @@ final class EditorDocument: Identifiable {
     @ObservationIgnored private var diskModificationDate: Date?
 
     var name: String { url?.lastPathComponent ?? untitledName }
+
+    var icon: NSImage {
+        url.map { NSWorkspace.shared.icon(forFile: $0.path) } ?? NSWorkspace.shared.icon(for: .plainText)
+    }
 
     convenience init(url: URL) throws {
         let (text, encoding) = try Self.read(url)

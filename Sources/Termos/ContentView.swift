@@ -30,6 +30,7 @@ struct ContentView: View {
                     if session.editor.isVisible, session.editor.activeDocument != nil {
                         EditorView(
                             workspace: session.editor,
+                            baseDirectory: session.currentDirectory(),
                             focusRequest: state.mainFocusRequest,
                             onSelect: { state.selectDocument($0) },
                             onClose: { state.closeDocument($0) },

@@ -1,11 +1,12 @@
 import AppKit
 import CodeEditSourceEditor
 import SwiftUI
-import UniformTypeIdentifiers
 
-/// Tabs of the open files above the editor of the active one.
+/// Tabs of the open files above the editor of the active one, with a status bar below.
 struct EditorView: View {
     let workspace: EditorWorkspace
+    /// The terminal's working directory; the status bar shows paths relative to it.
+    let baseDirectory: URL?
     /// Bumped by `AppState` when the editor should take keyboard focus back.
     let focusRequest: Int
     let onSelect: (EditorDocument) -> Void
@@ -18,6 +19,8 @@ struct EditorView: View {
             Divider()
             if let document = workspace.activeDocument {
                 EditorHostView(document: document, focusRequest: focusRequest, onEscape: onEscape)
+                Divider()
+                EditorStatusBar(document: document, baseDirectory: baseDirectory)
             }
         }
     }
@@ -56,8 +59,7 @@ private struct EditorTab: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Image(nsImage: document.url.map { NSWorkspace.shared.icon(forFile: $0.path) }
-                ?? NSWorkspace.shared.icon(for: .plainText))
+            Image(nsImage: document.icon)
                 .resizable()
                 .frame(width: 14, height: 14)
             Text(document.name)
@@ -78,6 +80,67 @@ private struct EditorTab: View {
         .onTapGesture(perform: onSelect)
         .onHover { isHovered = $0 }
         .help(document.url?.path ?? document.name)
+    }
+}
+
+/// The path of the shown file. Clicking the file icon copies the path.
+private struct EditorStatusBar: View {
+    let document: EditorDocument
+    let baseDirectory: URL?
+    @State private var copied = false
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Button(action: copyPath) {
+                Group {
+                    if copied {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Image(nsImage: document.icon).resizable()
+                    }
+                }
+                .frame(width: 14, height: 14)
+            }
+            .buttonStyle(.borderless)
+            .help("Copy Path")
+
+            Text(path)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .foregroundStyle(.secondary)
+                .textSelection(.enabled)
+            Spacer(minLength: 0)
+        }
+        .font(.system(size: 11))
+        .padding(.horizontal, 10)
+        .frame(height: 22)
+        .background(Color(nsColor: .windowBackgroundColor))
+        .onChange(of: document.id) { copied = false }
+        .task(id: copied) {
+            guard copied else { return }
+            try? await Task.sleep(for: .seconds(1.5))
+            copied = false
+        }
+    }
+
+    /// Relative to the terminal's working directory when the file is inside it,
+    /// otherwise the full path with `~` for the home folder.
+    private var path: String {
+        guard let url = document.url else { return document.name }
+        let filePath = url.resolvingSymlinksInPath().path
+        if let base = baseDirectory?.resolvingSymlinksInPath().path {
+            let prefix = base.hasSuffix("/") ? base : base + "/"
+            if filePath.hasPrefix(prefix) { return String(filePath.dropFirst(prefix.count)) }
+        }
+        return (filePath as NSString).abbreviatingWithTildeInPath
+    }
+
+    private func copyPath() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(path, forType: .string)
+        copied = true
     }
 }
 
