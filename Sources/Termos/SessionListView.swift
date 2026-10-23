@@ -18,6 +18,8 @@ struct SessionListView: View {
                     onRenameEnd: { name in endRename(session, name: name) }
                 )
                 .tag(session.id)
+                // A draggable row swallows clicks and focus, so the name field couldn't be edited.
+                .moveDisabled(renamingID == session.id)
                 .contextMenu {
                     Button("Rename Terminal") { renamingID = session.id }
                     Button("Close Terminal") { state.close(session) }
