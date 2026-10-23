@@ -6,6 +6,8 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-23
+
 ### Added
 - Syntax highlighting for `Gemfile` and `*.gemspec` files (Ruby) and `*.html.erb` templates (HTML).
 - Drag terminals in the sidebar to reorder them. <kbd>⌘1</kbd>…<kbd>⌘9</kbd> follow the new order.
@@ -40,6 +42,7 @@ First release.
 - Go to file (<kbd>⌘P</kbd>), from the terminal and the editor.
 - Universal (Apple silicon and Intel), signed and notarized builds, published as a GitHub release for each version tag.
 
-[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/tkowalewski/Termos/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/tkowalewski/Termos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tkowalewski/Termos/releases/tag/v0.1.0
