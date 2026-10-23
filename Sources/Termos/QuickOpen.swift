@@ -18,8 +18,12 @@ final class QuickOpenModel {
     @ObservationIgnored private var files: [String] = []
     @ObservationIgnored private var searchTask: Task<Void, Never>?
 
-    /// Last file list per directory, shown instantly while a fresh one is built.
+    /// Last file list of the few most recent directories, shown instantly while a fresh
+    /// one is built. Bounded, since a big list takes megabytes.
     private static var cache: [String: [String]] = [:]
+    /// Cached directories, least recently used first.
+    private static var cacheOrder: [String] = []
+    private static let cacheLimit = 4
 
     init(root: URL) {
         self.root = root
@@ -45,10 +49,19 @@ final class QuickOpenModel {
     }
 
     private func indexFinished(_ files: [String]) {
-        Self.cache[root.path] = files
+        Self.store(files, for: root.path)
         self.files = files
         isIndexing = false
         search()
+    }
+
+    private static func store(_ files: [String], for path: String) {
+        cache[path] = files
+        cacheOrder.removeAll { $0 == path }
+        cacheOrder.append(path)
+        while cacheOrder.count > cacheLimit {
+            cache[cacheOrder.removeFirst()] = nil
+        }
     }
 
     /// Ranks off the main thread; a newer query cancels the running one.

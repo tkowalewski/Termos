@@ -12,6 +12,8 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ### Changed
 - The status bar below the editor is as tall as the file tabs and has the same background as the sidebar.
+- Quick open (<kbd>⌘P</kbd>) outside a git repository skips hidden folders, app bundles, `~/Library`, `DerivedData` and `Pods`, and lists up to 20,000 files. It no longer scans the whole home folder or triggers macOS privacy prompts there.
+- Quick open keeps file lists of only the 4 most recently searched folders in memory.
 
 ## [0.2.0] - 2026-10-22
 
