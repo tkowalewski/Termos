@@ -294,6 +294,11 @@ final class AppState {
         }
     }
 
+    /// Reorders terminals dragged in the list; their shortcuts follow the new positions.
+    func moveSessions(fromOffsets source: IndexSet, toOffset destination: Int) {
+        sessions.move(fromOffsets: source, toOffset: destination)
+    }
+
     func selectAdjacentSession(offset: Int) {
         guard let index = activeIndex, !sessions.isEmpty else { return }
         let next = (index + offset + sessions.count) % sessions.count

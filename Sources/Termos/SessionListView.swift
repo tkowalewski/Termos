@@ -23,6 +23,7 @@ struct SessionListView: View {
                     Button("Close Terminal") { state.close(session) }
                 }
             }
+            .onMove { state.moveSessions(fromOffsets: $0, toOffset: $1) }
         }
         .listStyle(.sidebar)
         .safeAreaInset(edge: .bottom) {

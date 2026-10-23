@@ -8,6 +8,7 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ### Added
 - Syntax highlighting for `Gemfile` and `*.gemspec` files (Ruby) and `*.html.erb` templates (HTML).
+- Drag terminals in the sidebar to reorder them. <kbd>⌘1</kbd>…<kbd>⌘9</kbd> follow the new order.
 
 ### Changed
 - The status bar below the editor is as tall as the file tabs and has the same background as the sidebar.
