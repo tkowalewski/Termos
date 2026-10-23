@@ -9,6 +9,9 @@ All notable changes to Termos are listed here, newest first. The format follows
 ### Added
 - Syntax highlighting for `Gemfile` and `*.gemspec` files (Ruby) and `*.html.erb` templates (HTML).
 
+### Changed
+- The status bar below the editor is as tall as the file tabs and has the same background as the sidebar.
+
 ## [0.2.0] - 2026-10-22
 
 ### Added

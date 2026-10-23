@@ -115,8 +115,8 @@ private struct EditorStatusBar: View {
         }
         .font(.system(size: 11))
         .padding(.horizontal, 10)
-        .frame(height: 22)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .frame(height: 30)
+        .background(SidebarMaterial())
         .onChange(of: document.id) { copied = false }
         .task(id: copied) {
             guard copied else { return }
@@ -145,6 +145,19 @@ private struct EditorStatusBar: View {
 }
 
 /// Hosts the active document's editor view, swapping it in place like the terminal host.
+/// The translucent material of the terminal list, so the status bar matches the sidebar.
+private struct SidebarMaterial: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = .sidebar
+        view.blendingMode = .behindWindow
+        view.state = .followsWindowActiveState
+        return view
+    }
+
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
+}
+
 private struct EditorHostView: NSViewRepresentable {
     let document: EditorDocument
     let focusRequest: Int
