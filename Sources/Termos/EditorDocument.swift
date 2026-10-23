@@ -63,7 +63,7 @@ final class EditorDocument: Identifiable {
 
         controller = TextViewController(
             string: text,
-            language: url.map { CodeLanguage.detectLanguageFrom(url: $0, prefixBuffer: String(text.prefix(256))) } ?? .default,
+            language: url.map { Self.language(for: $0, text: text) } ?? .default,
             configuration: EditorAppearance.configuration(for: NSApp.effectiveAppearance),
             cursorPositions: [CursorPosition(line: 1, column: 1)],
             coordinators: [changeTracker]
@@ -84,10 +84,24 @@ final class EditorDocument: Identifiable {
         try data.write(to: target, options: .atomic)
         if target != url {
             url = target
-            controller.language = CodeLanguage.detectLanguageFrom(url: target, prefixBuffer: String(text.prefix(256)))
+            controller.language = Self.language(for: target, text: text)
         }
         diskModificationDate = Self.modificationDate(of: target)
         isDirty = false
+    }
+
+    /// Detects the language from the file name, covering Ruby files that
+    /// CodeEditLanguages only knows by the `.rb` extension. ERB templates get
+    /// HTML: there is no grammar for the embedded Ruby.
+    private static func language(for url: URL, text: String) -> CodeLanguage {
+        let name = url.lastPathComponent.lowercased()
+        if name == "gemfile" || url.pathExtension.lowercased() == "gemspec" {
+            return .ruby
+        }
+        if name.hasSuffix(".html.erb") {
+            return .html
+        }
+        return CodeLanguage.detectLanguageFrom(url: url, prefixBuffer: String(text.prefix(256)))
     }
 
     /// Whether the file on disk changed since it was opened, saved or reloaded here.

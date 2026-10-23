@@ -6,6 +6,9 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+### Added
+- Syntax highlighting for `Gemfile` and `*.gemspec` files (Ruby) and `*.html.erb` templates (HTML).
+
 ## [0.2.0] - 2026-10-22
 
 ### Added
