@@ -6,6 +6,8 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-25
+
 ### Added
 - Review mode (<kbd>⌘R</kbd>): the git changes of the active terminal's repository. Changed, new and deleted files are listed in place of the file browser, staged and unstaged separately, and the selected file's diff is shown in place of the terminal or editor.
 - Stage, unstage or discard selected lines or whole hunks from the diff's context menu, and whole files with the buttons above the diff or from the file list.
@@ -46,7 +48,8 @@ First release.
 - Go to file (<kbd>⌘P</kbd>), from the terminal and the editor.
 - Universal (Apple silicon and Intel), signed and notarized builds, published as a GitHub release for each version tag.
 
-[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/tkowalewski/Termos/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/tkowalewski/Termos/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/tkowalewski/Termos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tkowalewski/Termos/releases/tag/v0.1.0
