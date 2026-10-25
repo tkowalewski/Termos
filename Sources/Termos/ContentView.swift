@@ -14,7 +14,15 @@ struct ContentView: View {
                 .frame(width: sessionListWidth)
             ResizeHandle(width: $sessionListWidth, range: 140...320)
 
-            if state.isFileBrowserVisible, let root = state.fileBrowserRoot {
+            if let review = state.activeSession?.review {
+                ReviewChangesPanel(
+                    model: review,
+                    onOpenFile: { state.openFile($0) },
+                    onDismiss: { state.hideReview() }
+                )
+                .frame(width: fileBrowserWidth)
+                ResizeHandle(width: $fileBrowserWidth, range: 160...480)
+            } else if state.isFileBrowserVisible, let root = state.fileBrowserRoot {
                 FileBrowserPanel(
                     root: root,
                     memory: state.fileBrowserMemory,
@@ -27,7 +35,13 @@ struct ContentView: View {
 
             Group {
                 if let session = state.activeSession {
-                    if session.editor.isVisible, session.editor.activeDocument != nil {
+                    if let review = session.review {
+                        ReviewDiffView(
+                            model: review,
+                            onOpenFile: { state.openFile($0) },
+                            onDismiss: { state.hideReview() }
+                        )
+                    } else if session.editor.isVisible, session.editor.activeDocument != nil {
                         EditorView(
                             workspace: session.editor,
                             baseDirectory: session.currentDirectory(),

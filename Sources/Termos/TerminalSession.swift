@@ -26,6 +26,10 @@ final class TerminalSession: Identifiable {
     let editor = EditorWorkspace()
     /// Each terminal shows or hides its own file browser (Cmd+B); hidden by default.
     var isFileBrowserVisible = false
+    /// Review mode (Cmd+R) while it is shown, in place of the file browser and the terminal or editor.
+    var review: ReviewModel?
+    /// The file last selected in review mode, selected again when it opens next time.
+    @ObservationIgnored var lastReviewSelection: GitChange.ID?
 
     @ObservationIgnored let terminalView: LocalProcessTerminalView
     @ObservationIgnored var onExit: ((TerminalSession) -> Void)?

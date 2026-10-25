@@ -6,6 +6,10 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+### Added
+- Review mode (<kbd>⌘R</kbd>): the git changes of the active terminal's repository. Changed, new and deleted files are listed in place of the file browser, staged and unstaged separately, and the selected file's diff is shown in place of the terminal or editor.
+- Stage, unstage or discard selected lines or whole hunks from the diff's context menu, and whole files with the buttons above the diff or from the file list.
+
 ## [0.3.0] - 2026-10-23
 
 ### Added

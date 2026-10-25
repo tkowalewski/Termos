@@ -38,6 +38,8 @@ struct TermosCommands: Commands {
                 .keyboardShortcut("b")
             Button("Toggle Terminal / Editor") { state.toggleEditor() }
                 .keyboardShortcut("`")
+            Button("Review Changes") { state.toggleReview() }
+                .keyboardShortcut("r")
             Divider()
         }
 

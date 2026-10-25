@@ -44,7 +44,10 @@ final class AppState {
     // MARK: File browser
 
     func toggleFileBrowser() {
-        if isFileBrowserVisible {
+        if activeSession?.review != nil {
+            hideReview()
+            showFileBrowser()
+        } else if isFileBrowserVisible {
             hideFileBrowser()
         } else {
             showFileBrowser()
@@ -85,6 +88,31 @@ final class AppState {
         fileBrowserRoot = directory
     }
 
+    // MARK: Review
+
+    /// Cmd+R: the git changes of the active terminal's repository, to stage or discard.
+    func toggleReview() {
+        if activeSession?.review != nil {
+            hideReview()
+        } else {
+            showReview()
+        }
+    }
+
+    func showReview() {
+        guard let session = activeSession, session.review == nil,
+              let directory = session.currentDirectory() else { return }
+        quickOpen = nil
+        session.review = ReviewModel(directory: directory, initialSelection: session.lastReviewSelection)
+    }
+
+    func hideReview() {
+        guard let session = activeSession, let review = session.review else { return }
+        session.lastReviewSelection = review.selectionID
+        session.review = nil
+        mainFocusRequest += 1
+    }
+
     // MARK: Quick open
 
     /// Cmd+P: searches the active terminal's working directory, from the terminal or
@@ -115,12 +143,14 @@ final class AppState {
     }
 
     var activeDocument: EditorDocument? {
-        guard let editor = activeSession?.editor, editor.isVisible else { return nil }
+        guard let session = activeSession, session.review == nil, session.editor.isVisible else { return nil }
+        let editor = session.editor
         return editor.activeDocument
     }
 
     func openFile(_ url: URL) {
         guard let editor = activeSession?.editor else { return }
+        hideReview()
         do {
             try editor.open(url)
             checkActiveDocumentOnDisk()
@@ -132,6 +162,7 @@ final class AppState {
     /// Cmd+N: a new, empty file in the editor. Where it goes is asked on the first save.
     func newDocument() {
         guard let editor = activeSession?.editor else { return }
+        hideReview()
         editor.newDocument()
         mainFocusRequest += 1
     }
@@ -150,7 +181,9 @@ final class AppState {
     /// Switches between the terminal and the editor of the active session.
     func toggleEditor() {
         guard let editor = activeSession?.editor else { return }
-        if editor.isVisible {
+        if activeSession?.review != nil {
+            hideReview()
+        } else if editor.isVisible {
             showTerminal()
         } else if editor.activeDocument != nil {
             editor.isVisible = true
@@ -176,9 +209,11 @@ final class AppState {
         if !editor.isVisible { mainFocusRequest += 1 }
     }
 
-    /// Cmd+W: closes the open file when the editor is shown, otherwise the terminal.
+    /// Cmd+W: closes review mode or the open file when shown, otherwise the terminal.
     func closeActiveItem() {
-        if let document = activeDocument {
+        if activeSession?.review != nil {
+            hideReview()
+        } else if let document = activeDocument {
             closeDocument(document)
         } else {
             closeActiveSession()

@@ -146,7 +146,7 @@ private struct EditorStatusBar: View {
 
 /// Hosts the active document's editor view, swapping it in place like the terminal host.
 /// The translucent material of the terminal list, so the status bar matches the sidebar.
-private struct SidebarMaterial: NSViewRepresentable {
+struct SidebarMaterial: NSViewRepresentable {
     func makeNSView(context: Context) -> NSVisualEffectView {
         let view = NSVisualEffectView()
         view.material = .sidebar

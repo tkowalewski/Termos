@@ -56,13 +56,20 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - In a git repository it lists files with `git ls-files`, so `.gitignore` is respected. Elsewhere it walks the directory with the file browser's filters.
 - Ranking favours matches in the file name, at word boundaries and in consecutive characters.
 
+### Review changes
+- <kbd>⌘R</kbd> shows the git changes of the active terminal's repository: the changed, new and deleted files in place of the file browser, and the diff of the selected file in place of the terminal or editor.
+- Files are listed in two groups, staged and unstaged, and the list updates live, also after `git` commands run in the terminal.
+- Select lines in the diff with a click, <kbd>⇧</kbd>-click or by dragging; clicking a hunk's `@@` header selects the whole hunk. Right-click to stage, unstage or discard the selected lines or the hunk.
+- Whole files are staged, unstaged or discarded with the buttons above the diff or from the file's context menu. Discarding asks first; a discarded new file goes to the Trash.
+- Double-click a file to open it in the editor. <kbd>Esc</kbd> or <kbd>⌘R</kbd> closes review mode.
+
 ## Keyboard shortcuts
 
 ### Terminals
 | Shortcut | Action |
 | --- | --- |
 | <kbd>⌘T</kbd> | New terminal |
-| <kbd>⌘W</kbd> | Close the open file in the editor, otherwise close the terminal |
+| <kbd>⌘W</kbd> | Close review mode or the open file in the editor, otherwise close the terminal |
 | <kbd>⌘1</kbd> … <kbd>⌘8</kbd> | Switch to terminal 1–8 |
 | <kbd>⌘9</kbd> | Switch to the last terminal |
 | <kbd>⇧⌘[</kbd> / <kbd>⇧⌘]</kbd> | Previous / next terminal |
@@ -74,6 +81,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | <kbd>⌘N</kbd> | New file |
 | <kbd>⌘P</kbd> | Go to file |
 | <kbd>⌘`</kbd> | Switch between the terminal and the editor |
+| <kbd>⌘R</kbd> | Review git changes |
 | <kbd>⌘S</kbd> | Save the file |
 | <kbd>⌘F</kbd> | Find in file |
 | <kbd>Esc</kbd> | Collapse multiple cursors; otherwise go back to the terminal |
