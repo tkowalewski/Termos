@@ -15,6 +15,8 @@ struct ContentMatch: Sendable, Identifiable {
     let preview: String
     /// UTF-16 ranges of every match in `preview`, for highlighting.
     let highlights: [NSRange]
+    /// On the first match of a file: matching lines of the file left out by the per-file limit.
+    var moreInFile = 0
 
     var id: String { "\(path):\(line)" }
 }
@@ -23,7 +25,9 @@ struct ContentMatch: Sendable, Identifiable {
 /// .gitignore is honoured (through `FileIndex`), binary and very large files are skipped,
 /// and the search ignores case unless the query has an uppercase letter.
 enum ContentSearcher {
-    static let resultLimit = 1_000
+    static let resultLimit = 500
+    /// Keeps one file (minified code, a lockfile) from filling the whole list.
+    static let perFileLimit = 50
     static let maximumFileSize = 10 * 1024 * 1024
     private static let previewLength = 160
     private static let chunkSize = 256
@@ -71,9 +75,10 @@ enum ContentSearcher {
         var lineEnd = 0
         var contentsEnd = 0
         var searchFrom = 0
+        var omitted = 0
         text.getLineStart(nil, end: &lineEnd, contentsEnd: &contentsEnd, for: NSRange(location: 0, length: 0))
 
-        while searchFrom < text.length, results.count < resultLimit {
+        while searchFrom < text.length {
             let found = text.range(of: query, options: options, range: NSRange(location: searchFrom, length: text.length - searchFrom))
             guard found.location != NSNotFound else { break }
 
@@ -94,9 +99,14 @@ enum ContentSearcher {
             }
             if inLine.isEmpty { inLine = [found] }
 
-            results.append(result(path: path, lineNumber: lineNumber, line: line, matches: inLine, in: text))
+            if results.count < perFileLimit {
+                results.append(result(path: path, lineNumber: lineNumber, line: line, matches: inLine, in: text))
+            } else {
+                omitted += 1
+            }
             searchFrom = max(lineEnd, NSMaxRange(found))
         }
+        if omitted > 0 { results[0].moreInFile = omitted }
         return results
     }
 
@@ -321,7 +331,7 @@ struct ContentSearchView: View {
                 LazyVStack(spacing: 0) {
                     ForEach(Array(model.results.enumerated()), id: \.element.id) { index, match in
                         if index == 0 || model.results[index - 1].path != match.path {
-                            ContentSearchFileHeader(path: match.path)
+                            ContentSearchFileHeader(path: match.path, moreLines: match.moreInFile)
                                 .padding(.top, index == 0 ? 0 : 6)
                         }
                         ContentSearchRow(match: match, isSelected: index == model.selectedIndex)
@@ -352,6 +362,7 @@ struct ContentSearchView: View {
 
 private struct ContentSearchFileHeader: View {
     let path: String
+    let moreLines: Int
 
     var body: some View {
         let path = path as NSString
@@ -371,6 +382,12 @@ private struct ContentSearchFileHeader: View {
                 .lineLimit(1)
                 .truncationMode(.head)
             Spacer(minLength: 0)
+            if moreLines > 0 {
+                Text("+\(moreLines) more")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .help("Only the first \(ContentSearcher.perFileLimit) matching lines of this file are listed")
+            }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 4)

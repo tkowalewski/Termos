@@ -7,7 +7,7 @@ All notable changes to Termos are listed here, newest first. The format follows
 ## [Unreleased]
 
 ### Added
-- Search in files (<kbd>⌘E</kbd>): searches the contents of the files in the active terminal's working directory, like `ag` or `rg`, and lists the matching lines grouped by file. In a git repository `.gitignore` is respected; binary files and files larger than 10 MB are skipped. The search ignores case unless the query has an uppercase letter. It starts with the text selected in the editor, otherwise with the last query. The chosen line opens in the editor with the match selected.
+- Search in files (<kbd>⌘E</kbd>): searches the contents of the files in the active terminal's working directory, like `ag` or `rg`, and lists the matching lines grouped by file (up to 50 per file and 500 in total). In a git repository `.gitignore` is respected; binary files and files larger than 10 MB are skipped. The search ignores case unless the query has an uppercase letter. It starts with the text selected in the editor, otherwise with the last query. The chosen line opens in the editor with the match selected.
 
 ## [0.4.0] - 2026-10-25
 

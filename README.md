@@ -60,7 +60,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - <kbd>⌘E</kbd> searches the contents of the files in the active terminal's working directory, like `ag` or `rg`. It works in the terminal and in the editor.
 - It searches the same files as go to file: in a git repository `.gitignore` is respected. Binary files and files larger than 10 MB are skipped.
 - The query is plain text, not a regular expression. Case is ignored unless the query has an uppercase letter.
-- Matching lines are listed grouped by file, with the matches highlighted; at most 1,000 lines are shown.
+- Matching lines are listed grouped by file, with the matches highlighted; at most 50 lines per file and 500 in total are shown. A file with more matching lines shows how many were left out.
 - The search starts with the text selected in the editor, otherwise with the last query.
 - The chosen line opens in the editor, with the match selected and scrolled into view.
 
