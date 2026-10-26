@@ -71,6 +71,18 @@ struct ContentView: View {
                         .padding(.top, 48)
                         .padding(.horizontal, 16)
                     }
+                } else if let contentSearch = state.contentSearch {
+                    ZStack(alignment: .top) {
+                        Color.black.opacity(0.12)
+                            .onTapGesture { state.dismissContentSearch() }
+                        ContentSearchView(
+                            model: contentSearch,
+                            onOpen: { state.openFromContentSearch($0, in: contentSearch) },
+                            onDismiss: { state.dismissContentSearch() }
+                        )
+                        .padding(.top, 48)
+                        .padding(.horizontal, 16)
+                    }
                 }
             }
         }

@@ -311,6 +311,7 @@ final class EditorContainerView: NSView {
                   let selectionManager = textView.selectionManager else { return }
             textView.layoutSubtreeIfNeeded()
             selectionManager.setSelectedRanges(selectionManager.textSelections.map(\.range))
+            self?.current?.applyPendingReveal()
         }
     }
 

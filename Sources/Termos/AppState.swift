@@ -9,6 +9,7 @@ final class AppState {
         didSet {
             updateDirectoryPolling()
             quickOpen = nil
+            contentSearch = nil
         }
     }
 
@@ -26,6 +27,8 @@ final class AppState {
     private(set) var mainFocusRequest = 0
     /// The Cmd+P file finder, while it is open.
     private(set) var quickOpen: QuickOpenModel?
+    /// The Cmd+E content search, while it is open.
+    private(set) var contentSearch: ContentSearchModel?
 
     @ObservationIgnored let fileBrowserMemory = FileBrowserMemory()
     @ObservationIgnored private var directoryPollTimer: Timer?
@@ -103,6 +106,7 @@ final class AppState {
         guard let session = activeSession, session.review == nil,
               let directory = session.currentDirectory() else { return }
         quickOpen = nil
+        contentSearch = nil
         session.review = ReviewModel(directory: directory, initialSelection: session.lastReviewSelection)
     }
 
@@ -121,6 +125,7 @@ final class AppState {
         if quickOpen != nil {
             dismissQuickOpen()
         } else if let root = activeSession?.currentDirectory() {
+            contentSearch = nil
             quickOpen = QuickOpenModel(root: root)
         }
     }
@@ -134,6 +139,43 @@ final class AppState {
         quickOpen = nil
         openFile(url)
         mainFocusRequest += 1
+    }
+
+    // MARK: Content search
+
+    /// Cmd+E: searches the contents of the files under the active terminal's working
+    /// directory. Starts with the text selected in the editor, if any.
+    func toggleContentSearch() {
+        if contentSearch != nil {
+            dismissContentSearch()
+        } else if let root = activeSession?.currentDirectory() {
+            quickOpen = nil
+            contentSearch = ContentSearchModel(root: root, query: selectedEditorText())
+        }
+    }
+
+    func dismissContentSearch() {
+        contentSearch = nil
+        mainFocusRequest += 1
+    }
+
+    /// Opens the file of a found line and selects the match in it.
+    func openFromContentSearch(_ match: ContentMatch, in model: ContentSearchModel) {
+        contentSearch = nil
+        openFile(model.url(of: match))
+        if let document = activeDocument, document.url == model.url(of: match).standardizedFileURL {
+            document.reveal(line: match.line, column: match.column, length: match.length)
+        }
+        mainFocusRequest += 1
+    }
+
+    /// The editor's selection when it is a single, non-empty line.
+    private func selectedEditorText() -> String? {
+        guard let textView = activeDocument?.controller.textView,
+              let range = textView.selectionManager.textSelections.first?.range,
+              range.length > 0, range.length <= 200 else { return nil }
+        let text = (textView.string as NSString).substring(with: range)
+        return text.contains(where: \.isNewline) ? nil : text
     }
 
     // MARK: Editor

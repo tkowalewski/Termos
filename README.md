@@ -56,6 +56,14 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - In a git repository it lists files with `git ls-files`, so `.gitignore` is respected. Elsewhere it walks the directory with the file browser's filters.
 - Ranking favours matches in the file name, at word boundaries and in consecutive characters.
 
+### Search in files
+- <kbd>⌘E</kbd> searches the contents of the files in the active terminal's working directory, like `ag` or `rg`. It works in the terminal and in the editor.
+- It searches the same files as go to file: in a git repository `.gitignore` is respected. Binary files and files larger than 10 MB are skipped.
+- The query is plain text, not a regular expression. Case is ignored unless the query has an uppercase letter.
+- Matching lines are listed grouped by file, with the matches highlighted; at most 1,000 lines are shown.
+- The search starts with the text selected in the editor, otherwise with the last query.
+- The chosen line opens in the editor, with the match selected and scrolled into view.
+
 ### Review changes
 - <kbd>⌘R</kbd> shows the git changes of the active terminal's repository: the changed, new and deleted files in place of the file browser, and the diff of the selected file in place of the terminal or editor.
 - Files are listed in two groups, staged and unstaged, and the list updates live, also after `git` commands run in the terminal.
@@ -80,6 +88,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | <kbd>⌘B</kbd> | Show or hide the file browser of the active terminal |
 | <kbd>⌘N</kbd> | New file |
 | <kbd>⌘P</kbd> | Go to file |
+| <kbd>⌘E</kbd> | Search in files |
 | <kbd>⌘`</kbd> | Switch between the terminal and the editor |
 | <kbd>⌘R</kbd> | Review git changes |
 | <kbd>⌘S</kbd> | Save the file |
@@ -96,11 +105,11 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | <kbd>⌥</kbd>-click | Add a cursor |
 | <kbd>⌥⌘↑</kbd> / <kbd>⌥⌘↓</kbd> | Add a cursor on the line above / below |
 
-### Go to file
+### Go to file and search in files
 | Shortcut | Action |
 | --- | --- |
 | <kbd>↑</kbd> / <kbd>↓</kbd> | Move through results |
-| <kbd>Return</kbd> | Open the selected file |
+| <kbd>Return</kbd> | Open the selected file or line |
 | <kbd>Esc</kbd> | Close |
 
 ## Building
@@ -154,7 +163,7 @@ swift scripts/make-icon.swift
 
 | Path | Contents |
 | --- | --- |
-| `Sources/Termos/` | The app: state (`AppState`), terminals, file browser, editor, multiple cursors, go to file |
+| `Sources/Termos/` | The app: state (`AppState`), terminals, file browser, editor, multiple cursors, go to file, search in files |
 | `Sources/Termos/Resources/` | App icon |
 | `Vendor/CodeEditTextView/` | Patched copy of CodeEditTextView (see its README) |
 | `scripts/bundle.sh` | Builds `build/Termos.app` |

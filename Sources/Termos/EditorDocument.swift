@@ -38,6 +38,8 @@ final class EditorDocument: Identifiable {
     @ObservationIgnored private let changeTracker = ChangeTracker()
     @ObservationIgnored private var encoding: String.Encoding
     @ObservationIgnored private var diskModificationDate: Date?
+    /// Text to select and scroll to once the editor is laid out in the window.
+    @ObservationIgnored private var pendingReveal: CursorPosition?
 
     var name: String { url?.lastPathComponent ?? untitledName }
 
@@ -135,6 +137,27 @@ final class EditorDocument: Identifiable {
         textView.undoManager?.beginUndoGrouping()
         textView.replaceCharacters(in: ranges, with: "")
         textView.undoManager?.endUndoGrouping()
+    }
+
+    /// Selects `length` characters at a 1-based line and UTF-16 column and scrolls them
+    /// into the middle of the editor, now if it is on screen or else once it is shown.
+    func reveal(line: Int, column: Int, length: Int) {
+        pendingReveal = CursorPosition(
+            start: .init(line: line, column: column),
+            end: .init(line: line, column: column + length)
+        )
+        if controller.textView?.window != nil { applyPendingReveal() }
+    }
+
+    /// Called by the editor host after it has laid the editor out.
+    func applyPendingReveal() {
+        guard let position = pendingReveal, let textView = controller.textView else { return }
+        pendingReveal = nil
+        textView.layoutSubtreeIfNeeded()
+        controller.setCursorPositions([position])
+        if let range = textView.selectionManager.textSelections.first?.range {
+            textView.scrollToRange(range, center: true)
+        }
     }
 
     /// Records the current disk state as seen, so the user is not asked again.

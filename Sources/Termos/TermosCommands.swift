@@ -31,6 +31,8 @@ struct TermosCommands: Commands {
         CommandGroup(replacing: .printItem) {
             Button("Go to File…") { state.toggleQuickOpen() }
                 .keyboardShortcut("p")
+            Button("Search in Files…") { state.toggleContentSearch() }
+                .keyboardShortcut("e")
         }
 
         CommandGroup(before: .toolbar) {
