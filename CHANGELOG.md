@@ -6,6 +6,8 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-26
+
 ### Added
 - Search in files (<kbd>⌘E</kbd>): searches the contents of the files in the active terminal's working directory, like `ag` or `rg`, and lists the matching lines grouped by file (up to 50 per file and 500 in total). In a git repository `.gitignore` is respected; binary files and files larger than 10 MB are skipped. The search ignores case unless the query has an uppercase letter. It starts with the text selected in the editor, otherwise with the last query. The chosen line opens in the editor with the match selected.
 
@@ -51,7 +53,8 @@ First release.
 - Go to file (<kbd>⌘P</kbd>), from the terminal and the editor.
 - Universal (Apple silicon and Intel), signed and notarized builds, published as a GitHub release for each version tag.
 
-[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/tkowalewski/Termos/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/tkowalewski/Termos/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/tkowalewski/Termos/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/tkowalewski/Termos/compare/v0.1.0...v0.2.0
