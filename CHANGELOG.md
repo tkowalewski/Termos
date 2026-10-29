@@ -9,6 +9,9 @@ All notable changes to Termos are listed here, newest first. The format follows
 ### Added
 - Context menu in the file browser: create a new file or folder (inside the clicked folder, next to the clicked file, or in the root when clicking empty space) and move files or folders to the Trash. A new file opens in the editor.
 
+### Changed
+- The editor wraps long lines to the width of the view instead of scrolling horizontally.
+
 ## [0.5.0] - 2026-10-26
 
 ### Added
