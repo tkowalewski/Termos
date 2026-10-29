@@ -18,6 +18,23 @@ enum Alerts {
         return response.rawValue - NSApplication.ModalResponse.alertFirstButtonReturn.rawValue
     }
 
+    /// Asks for a single line of text; `nil` when cancelled or left empty.
+    static func askForText(_ message: String, info: String = "", button: String) -> String? {
+        let alert = NSAlert()
+        alert.messageText = message
+        alert.informativeText = info
+        alert.addButton(withTitle: button)
+        alert.addButton(withTitle: "Cancel")
+
+        let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 260, height: 22))
+        alert.accessoryView = field
+        alert.window.initialFirstResponder = field
+
+        guard alert.runModal() == .alertFirstButtonReturn else { return nil }
+        let text = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        return text.isEmpty ? nil : text
+    }
+
     enum SaveChoice { case save, discard, cancel }
 
     static func askToSave(_ documents: [EditorDocument]) -> SaveChoice {

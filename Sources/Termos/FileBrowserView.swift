@@ -34,6 +34,7 @@ struct FileBrowserPanel: NSViewRepresentable {
 }
 
 /// Drives the NSOutlineView: lazy loading, live updates from FSEvents and keyboard actions.
+@MainActor
 final class FileBrowserController: NSObject, NSOutlineViewDataSource, NSOutlineViewDelegate {
     let scrollView = NSScrollView()
     private let outlineView = FileOutlineView()
@@ -61,6 +62,7 @@ final class FileBrowserController: NSObject, NSOutlineViewDataSource, NSOutlineV
         outlineView.action = #selector(rowClicked)
         outlineView.onActivate = { [weak self] in self?.activateSelectedRow() }
         outlineView.onCancel = { [weak self] in self?.onDismiss?() }
+        outlineView.menuProvider = { [weak self] row in self?.menu(forClickedRow: row) }
 
         scrollView.documentView = outlineView
         scrollView.hasVerticalScroller = true
@@ -96,6 +98,11 @@ final class FileBrowserController: NSObject, NSOutlineViewDataSource, NSOutlineV
         let directories = mustRescan
             ? root.loadedDirectories()
             : paths.compactMap { root.loadedDescendant(atPath: $0) }.filter(\.isDirectory)
+        reload(directories)
+    }
+
+    /// Re-reads the directories and updates their rows, keeping expansion and selection.
+    private func reload(_ directories: [FileNode]) {
         let changed = directories.filter { $0.reloadChildren() }
         guard !changed.isEmpty else { return }
 
@@ -170,6 +177,69 @@ final class FileBrowserController: NSObject, NSOutlineViewDataSource, NSOutlineV
         }
     }
 
+    // MARK: Context menu
+
+    /// Right-clicking a row selects it first, like in Finder; right-clicking empty space targets the root.
+    private func menu(forClickedRow row: Int) -> NSMenu? {
+        guard let root else { return nil }
+        let node = row >= 0 ? outlineView.item(atRow: row) as? FileNode : nil
+        if row >= 0 { outlineView.selectRowIndexes([row], byExtendingSelection: false) }
+
+        // New items go into the clicked folder, or next to the clicked file.
+        let directory = node.map { $0.isDirectory ? $0 : parent(of: $0) ?? root } ?? root
+
+        let menu = NSMenu()
+        menu.addItem(ClosureMenuItem(title: "New File…") { [weak self] in
+            self?.createItem(in: directory, isDirectory: false)
+        })
+        menu.addItem(ClosureMenuItem(title: "New Folder…") { [weak self] in
+            self?.createItem(in: directory, isDirectory: true)
+        })
+        if let node {
+            menu.addItem(.separator())
+            menu.addItem(ClosureMenuItem(title: "Move to Trash") { [weak self] in self?.trash(node) })
+        }
+        return menu
+    }
+
+    private func parent(of node: FileNode) -> FileNode? {
+        root?.loadedDescendant(atPath: node.url.deletingLastPathComponent().path)
+    }
+
+    private func createItem(in directory: FileNode, isDirectory: Bool) {
+        let kind = isDirectory ? "Folder" : "File"
+        guard let name = Alerts.askForText("New \(kind)", info: "In “\(directory.name)”", button: "Create") else {
+            return
+        }
+        let url = directory.url.appendingPathComponent(name, isDirectory: isDirectory)
+        do {
+            if isDirectory {
+                try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false)
+            } else {
+                try Data().write(to: url, options: .withoutOverwriting)
+            }
+        } catch {
+            Alerts.show(error)
+            return
+        }
+
+        // Show the new item right away instead of waiting for FSEvents.
+        reload([directory])
+        if directory !== root { outlineView.expandItem(directory) }
+        select(url: url)
+        if !isDirectory { onOpenFile?(url) }
+    }
+
+    private func trash(_ node: FileNode) {
+        do {
+            try FileManager.default.trashItem(at: node.url, resultingItemURL: nil)
+        } catch {
+            Alerts.show(error)
+            return
+        }
+        if let directory = parent(of: node) { reload([directory]) }
+    }
+
     // MARK: NSOutlineViewDataSource
 
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
@@ -199,10 +269,17 @@ final class FileBrowserController: NSObject, NSOutlineViewDataSource, NSOutlineV
     }
 }
 
-/// Outline view that reports Enter (open) and Esc (dismiss), and focuses itself when shown.
+/// Outline view that reports Enter (open) and Esc (dismiss), builds its context menu
+/// for the clicked row, and focuses itself when shown.
 final class FileOutlineView: NSOutlineView {
     var onActivate: (() -> Void)?
     var onCancel: (() -> Void)?
+    var menuProvider: ((Int) -> NSMenu?)?
+
+    override func menu(for event: NSEvent) -> NSMenu? {
+        let row = row(at: convert(event.locationInWindow, from: nil))
+        return menuProvider?(row)
+    }
 
     override func keyDown(with event: NSEvent) {
         switch event.keyCode {
