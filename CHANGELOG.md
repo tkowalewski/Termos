@@ -6,6 +6,8 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-29
+
 ### Added
 - Context menu in the file browser: create a new file or folder (inside the clicked folder, next to the clicked file, or in the root when clicking empty space) and move files or folders to the Trash. A new file opens in the editor.
 - Split the terminal into an upper and a lower pane with <kbd>⌘H</kbd>, each running its own shell, started in the working directory of the current one. Click a pane or use <kbd>⌥⌘[</kbd> / <kbd>⌥⌘]</kbd> to focus it; the file browser, go to file and search in files follow the focused pane. <kbd>⌘W</kbd> or `exit` closes the focused pane. Hide Termos is no longer on <kbd>⌘H</kbd>; it stays in the Termos menu.
@@ -60,7 +62,8 @@ First release.
 - Go to file (<kbd>⌘P</kbd>), from the terminal and the editor.
 - Universal (Apple silicon and Intel), signed and notarized builds, published as a GitHub release for each version tag.
 
-[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/tkowalewski/Termos/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/tkowalewski/Termos/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/tkowalewski/Termos/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/tkowalewski/Termos/compare/v0.2.0...v0.3.0
