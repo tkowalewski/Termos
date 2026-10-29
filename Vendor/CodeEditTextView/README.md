@@ -5,6 +5,7 @@ A copy of [CodeEditTextView](https://github.com/CodeEditApp/CodeEditTextView) 0.
 ## Changes
 
 - `TextLayoutManager+Layout.swift`, `layoutLine(...)`: removed the local `var maxFoundLineWidth = maxFoundLineWidth`, which shadowed the `inout` parameter. Because of it, the widest line was never reported, the text view stayed as wide as the window, and long lines could not be scrolled horizontally. The bug came in with upstream PR #118 (0.12.0).
+- `Typesetter.swift`, `layoutTextUntilLineBreak(...)`: with wrapped lines, every fragment after the first one of a line was typeset too long, so text from the following fragments was drawn past the right edge and cut off there (for example, half a word at the end of a row, then the whole word on the next row). `suggestLineBreak` returns an end offset, but it was used as a length.
 
 Remove this directory once an upstream release fixes it.
 
