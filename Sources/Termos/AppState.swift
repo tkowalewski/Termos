@@ -251,12 +251,17 @@ final class AppState {
         if !editor.isVisible { mainFocusRequest += 1 }
     }
 
-    /// Cmd+W: closes review mode or the open file when shown, otherwise the terminal.
+    /// Cmd+W: closes review mode or the open file when shown, otherwise the focused
+    /// pane of a split terminal, otherwise the terminal.
     func closeActiveItem() {
         if activeSession?.review != nil {
             hideReview()
         } else if let document = activeDocument {
             closeDocument(document)
+        } else if let session = activeSession, session.isSplit {
+            session.closeFocusedPane()
+            refreshFileBrowserRoot()
+            mainFocusRequest += 1
         } else {
             closeActiveSession()
         }
@@ -348,6 +353,22 @@ final class AppState {
     func rename(_ session: TerminalSession, to name: String) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         session.customTitle = trimmed.isEmpty ? nil : trimmed
+    }
+
+    /// Cmd+H: splits the shown terminal into an upper and a lower pane.
+    func splitTerminal() {
+        guard let session = activeSession, session.review == nil, !session.editor.isVisible else { return }
+        session.split()
+        mainFocusRequest += 1
+    }
+
+    /// Cmd+Option+[ / ]: moves keyboard focus to the upper or lower pane of a split terminal.
+    func focusPane(_ index: Int) {
+        guard let session = activeSession, session.isSplit, session.review == nil,
+              !session.editor.isVisible, session.panes.indices.contains(index) else { return }
+        session.focusedPaneIndex = index
+        refreshFileBrowserRoot()
+        mainFocusRequest += 1
     }
 
     func closeActiveSession() {

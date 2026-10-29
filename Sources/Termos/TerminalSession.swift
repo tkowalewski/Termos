@@ -2,25 +2,39 @@ import AppKit
 import Observation
 import SwiftTerm
 
-/// One shell running in a pseudo-terminal, with its view.
+/// A terminal in the list: one shell running in a pseudo-terminal, with its view,
+/// or two of them when split into an upper and a lower pane (Cmd+H).
 ///
-/// The view is kept alive while the session is hidden, so switching terminals
+/// The views are kept alive while the session is hidden, so switching terminals
 /// never loses scrollback or the state of the running program.
 @MainActor
 @Observable
 final class TerminalSession: Identifiable {
     let id = UUID()
-    /// Title set by the shell or the running program.
-    private(set) var title: String
-    /// Name given by the user in the terminal list. Overrides `title` while set.
+    /// Name given by the user in the terminal list. Overrides the shell's title while set.
     var customTitle: String?
 
+    /// Title set by the shell or the running program in the focused pane.
     var displayTitle: String {
-        customTitle ?? title
+        customTitle ?? titles[ObjectIdentifier(focusedPane)] ?? shellName
     }
 
-    /// Last directory reported by the shell through OSC 7, if it reports one.
-    private(set) var reportedDirectory: URL?
+    /// The upper pane, then the lower one when split.
+    private(set) var panes: [LocalProcessTerminalView] = []
+    /// The pane that has (or gets back) keyboard focus and whose directory the file browser follows.
+    var focusedPaneIndex = 0
+
+    var focusedPane: LocalProcessTerminalView {
+        panes[min(focusedPaneIndex, panes.count - 1)]
+    }
+
+    var isSplit: Bool { panes.count > 1 }
+
+    private let shellName: String
+    /// Titles set by the shell or the running program, per pane.
+    private var titles: [ObjectIdentifier: String] = [:]
+    /// Last directory reported by each pane's shell through OSC 7, if it reports one.
+    @ObservationIgnored private var reportedDirectories: [ObjectIdentifier: URL] = [:]
 
     /// Files this terminal has open, shown in place of the terminal when visible.
     let editor = EditorWorkspace()
@@ -31,43 +45,67 @@ final class TerminalSession: Identifiable {
     /// The file last selected in review mode, selected again when it opens next time.
     @ObservationIgnored var lastReviewSelection: GitChange.ID?
 
-    @ObservationIgnored let terminalView: LocalProcessTerminalView
+    /// Called when the shell of the last pane exits.
     @ObservationIgnored var onExit: ((TerminalSession) -> Void)?
 
     init(startDirectory: URL?) {
-        let shell = Self.loginShell()
-        title = (shell as NSString).lastPathComponent
-
-        terminalView = LocalProcessTerminalView(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
-        terminalView.font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
-        terminalView.processDelegate = self
-        // Option types characters (e.g. Option+L = "ł" on the Polish layout) instead of acting as Meta.
-        terminalView.optionAsMetaKey = false
-        // SwiftTerm keeps only 500 lines by default.
-        terminalView.changeScrollback(10_000)
-
-        let directory = startDirectory?.path ?? FileManager.default.homeDirectoryForCurrentUser.path
-        terminalView.startProcess(
-            executable: shell,
-            environment: Self.environment(),
-            // A leading "-" in argv[0] makes the shell a login shell, like Terminal.app does.
-            execName: "-" + (shell as NSString).lastPathComponent,
-            currentDirectory: directory
-        )
+        shellName = (Self.loginShell() as NSString).lastPathComponent
+        panes = [makePane(directory: startDirectory)]
     }
 
-    var processID: pid_t {
-        terminalView.process.shellPid
+    /// Opens a second shell below, in the focused pane's working directory, and focuses it.
+    func split() {
+        guard !isSplit else { return }
+        panes.append(makePane(directory: currentDirectory()))
+        focusedPaneIndex = panes.count - 1
     }
 
-    /// The shell's working directory: read straight from the process, falling back to OSC 7.
+    /// Closes the focused pane's shell; the other pane takes the whole terminal.
+    func closeFocusedPane() {
+        guard isSplit else { return }
+        let pane = focusedPane
+        remove(pane)
+        pane.terminate()
+    }
+
+    /// The focused pane's working directory: read straight from its process, falling back to OSC 7.
     func currentDirectory() -> URL? {
-        ProcessDirectory.currentDirectory(of: processID) ?? reportedDirectory
+        let pane = focusedPane
+        return ProcessDirectory.currentDirectory(of: pane.process.shellPid)
+            ?? reportedDirectories[ObjectIdentifier(pane)]
     }
 
     func terminate() {
         onExit = nil
-        terminalView.terminate()
+        panes.forEach { $0.terminate() }
+    }
+
+    private func makePane(directory: URL?) -> LocalProcessTerminalView {
+        let shell = Self.loginShell()
+        let pane = LocalProcessTerminalView(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
+        pane.font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
+        pane.processDelegate = self
+        // Option types characters (e.g. Option+L = "ł" on the Polish layout) instead of acting as Meta.
+        pane.optionAsMetaKey = false
+        // SwiftTerm keeps only 500 lines by default.
+        pane.changeScrollback(10_000)
+
+        pane.startProcess(
+            executable: shell,
+            environment: Self.environment(),
+            // A leading "-" in argv[0] makes the shell a login shell, like Terminal.app does.
+            execName: "-" + (shell as NSString).lastPathComponent,
+            currentDirectory: directory?.path ?? FileManager.default.homeDirectoryForCurrentUser.path
+        )
+        return pane
+    }
+
+    private func remove(_ pane: LocalProcessTerminalView) {
+        guard let index = panes.firstIndex(where: { $0 === pane }) else { return }
+        panes.remove(at: index)
+        titles[ObjectIdentifier(pane)] = nil
+        reportedDirectories[ObjectIdentifier(pane)] = nil
+        focusedPaneIndex = min(focusedPaneIndex, panes.count - 1)
     }
 
     private static func loginShell() -> String {
@@ -95,19 +133,25 @@ extension TerminalSession: LocalProcessTerminalViewDelegate {
 
     nonisolated func setTerminalTitle(source: LocalProcessTerminalView, title: String) {
         MainActor.assumeIsolated {
-            if !title.isEmpty { self.title = title }
+            if !title.isEmpty { titles[ObjectIdentifier(source)] = title }
         }
     }
 
     nonisolated func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
         MainActor.assumeIsolated {
-            reportedDirectory = directory.flatMap(ProcessDirectory.url(fromOSC7:))
+            reportedDirectories[ObjectIdentifier(source)] = directory.flatMap(ProcessDirectory.url(fromOSC7:))
         }
     }
 
+    /// A pane whose shell exits closes; the terminal closes with its last pane.
     nonisolated func processTerminated(source: TerminalView, exitCode: Int32?) {
         MainActor.assumeIsolated {
-            onExit?(self)
+            guard let pane = panes.first(where: { $0 === source }) else { return }
+            if isSplit {
+                remove(pane)
+            } else {
+                onExit?(self)
+            }
         }
     }
 }

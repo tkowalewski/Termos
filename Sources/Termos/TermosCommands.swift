@@ -64,7 +64,24 @@ struct TermosCommands: Commands {
                 .keyboardShortcut(.downArrow, modifiers: [.command, .option])
         }
 
+        // Cmd+H splits the terminal instead of hiding the app; Hide Termos stays in the app menu.
+        CommandGroup(replacing: .appVisibility) {
+            Button("Hide Termos") { NSApp.hide(nil) }
+            Button("Hide Others") { NSApp.hideOtherApplications(nil) }
+                .keyboardShortcut("h", modifiers: [.command, .option])
+            Button("Show All") { NSApp.unhideAllApplications(nil) }
+        }
+
         CommandMenu("Terminal") {
+            Button("Split Terminal") { state.splitTerminal() }
+                .keyboardShortcut("h")
+            Button("Focus Upper Pane") { state.focusPane(0) }
+                .keyboardShortcut("[", modifiers: [.command, .option])
+            Button("Focus Lower Pane") { state.focusPane(1) }
+                .keyboardShortcut("]", modifiers: [.command, .option])
+
+            Divider()
+
             ForEach(1...9, id: \.self) { number in
                 Button(number == 9 ? "Last Terminal" : "Terminal \(number)") {
                     state.selectSession(shortcut: number)

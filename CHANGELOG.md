@@ -8,6 +8,7 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ### Added
 - Context menu in the file browser: create a new file or folder (inside the clicked folder, next to the clicked file, or in the root when clicking empty space) and move files or folders to the Trash. A new file opens in the editor.
+- Split the terminal into an upper and a lower pane with <kbd>⌘H</kbd>, each running its own shell, started in the working directory of the current one. Click a pane or use <kbd>⌥⌘[</kbd> / <kbd>⌥⌘]</kbd> to focus it; the file browser, go to file and search in files follow the focused pane. <kbd>⌘W</kbd> or `exit` closes the focused pane. Hide Termos is no longer on <kbd>⌘H</kbd>; it stays in the Termos menu.
 
 ### Changed
 - The editor wraps long lines to the width of the view instead of scrolling horizontally.

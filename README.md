@@ -19,7 +19,8 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - A new terminal opens in the working directory of the current one.
 - Click the name of the active terminal (or use Rename Terminal in its context menu) to rename it. An empty name brings back the title set by the shell.
 - <kbd>⌥</kbd> types characters from your keyboard layout (e.g. <kbd>⌥L</kbd> gives `ł` on the Polish layout) instead of acting as Meta. <kbd>⌥←</kbd> / <kbd>⌥→</kbd> still jump by word.
-- Typing `exit` in the shell closes its terminal. Closing the last terminal quits the app.
+- <kbd>⌘H</kbd> splits the terminal into an upper and a lower pane, each with its own shell. The new shell starts in the working directory of the current one. Click a pane or use <kbd>⌥⌘[</kbd> / <kbd>⌥⌘]</kbd> to move between them; the file browser, go to file and search in files follow the focused pane. Hide Termos stays in the Termos menu, without a shortcut.
+- Typing `exit` in the shell closes its pane, or its terminal when it is not split. Closing the last terminal quits the app.
 
 ### File browser
 - Hidden by default. Toggle it with <kbd>⌘B</kbd>. Each terminal shows or hides its own file browser.
@@ -77,7 +78,9 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | Shortcut | Action |
 | --- | --- |
 | <kbd>⌘T</kbd> | New terminal |
-| <kbd>⌘W</kbd> | Close review mode or the open file in the editor, otherwise close the terminal |
+| <kbd>⌘H</kbd> | Split the terminal into an upper and a lower pane |
+| <kbd>⌥⌘[</kbd> / <kbd>⌥⌘]</kbd> | Focus the upper / lower pane |
+| <kbd>⌘W</kbd> | Close review mode or the open file in the editor, otherwise the focused pane of a split terminal, otherwise the terminal |
 | <kbd>⌘1</kbd> … <kbd>⌘8</kbd> | Switch to terminal 1–8 |
 | <kbd>⌘9</kbd> | Switch to the last terminal |
 | <kbd>⇧⌘[</kbd> / <kbd>⇧⌘]</kbd> | Previous / next terminal |
