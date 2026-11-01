@@ -6,6 +6,9 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+### Removed
+- The <kbd>⌥⌘[</kbd> / <kbd>⌥⌘]</kbd> shortcuts for focusing the upper / lower pane of a split terminal. Click a pane to focus it, or use Focus Upper Pane / Focus Lower Pane in the Terminal menu.
+
 ## [0.6.0] - 2026-10-29
 
 ### Added

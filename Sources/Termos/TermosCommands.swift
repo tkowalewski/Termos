@@ -76,9 +76,7 @@ struct TermosCommands: Commands {
             Button("Split Terminal") { state.splitTerminal() }
                 .keyboardShortcut("h")
             Button("Focus Upper Pane") { state.focusPane(0) }
-                .keyboardShortcut("[", modifiers: [.command, .option])
             Button("Focus Lower Pane") { state.focusPane(1) }
-                .keyboardShortcut("]", modifiers: [.command, .option])
 
             Divider()
 
