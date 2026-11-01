@@ -21,6 +21,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - <kbd>⌥</kbd> types characters from your keyboard layout (e.g. <kbd>⌥L</kbd> gives `ł` on the Polish layout) instead of acting as Meta. <kbd>⌥←</kbd> / <kbd>⌥→</kbd> still jump by word.
 - <kbd>⌘H</kbd> splits the terminal into an upper and a lower pane, each with its own shell. The new shell starts in the working directory of the current one. Click a pane to focus it; the file browser, go to file and search in files follow the focused pane. Hide Termos stays in the Termos menu, without a shortcut.
 - Typing `exit` in the shell closes its pane, or its terminal when it is not split. Closing the last terminal quits the app.
+- Closing a terminal with <kbd>⌘W</kbd> or Close Terminal in its context menu asks first. `exit` closes it without asking.
 
 ### File browser
 - Hidden by default. Toggle it with <kbd>⌘B</kbd>. Each terminal shows or hides its own file browser.

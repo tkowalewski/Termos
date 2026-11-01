@@ -362,7 +362,7 @@ final class AppState {
         mainFocusRequest += 1
     }
 
-    /// Cmd+Option+[ / ]: moves keyboard focus to the upper or lower pane of a split terminal.
+    /// Terminal menu: moves keyboard focus to the upper or lower pane of a split terminal.
     func focusPane(_ index: Int) {
         guard let session = activeSession, session.isSplit, session.review == nil,
               !session.editor.isVisible, session.panes.indices.contains(index) else { return }
@@ -376,8 +376,9 @@ final class AppState {
         close(session)
     }
 
+    /// Asks first, since the shell and everything running in it ends with the terminal.
     func close(_ session: TerminalSession) {
-        guard resolveUnsavedDocuments(in: session) else { return }
+        guard Alerts.confirmClose(session), resolveUnsavedDocuments(in: session) else { return }
         session.terminate()
         remove(session)
     }

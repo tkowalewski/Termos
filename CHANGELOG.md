@@ -6,6 +6,9 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+### Added
+- Closing a terminal with <kbd>⌘W</kbd> or Close Terminal in the sidebar's context menu asks for confirmation first. Typing `exit` still closes it without asking.
+
 ### Changed
 - Previous / next terminal moved from <kbd>⇧⌘[</kbd> / <kbd>⇧⌘]</kbd> to <kbd>⌘[</kbd> / <kbd>⌘]</kbd>. In the editor these keys still shift the selected lines left / right.
 

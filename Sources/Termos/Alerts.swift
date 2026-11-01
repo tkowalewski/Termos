@@ -35,6 +35,15 @@ enum Alerts {
         return text.isEmpty ? nil : text
     }
 
+    /// Returns true when the user chose to close the terminal.
+    static func confirmClose(_ session: TerminalSession) -> Bool {
+        ask("Close the terminal “\(session.displayTitle)”?",
+            info: session.isSplit
+                ? "The shells in both panes and the programs running in them will be terminated."
+                : "The shell and the programs running in it will be terminated.",
+            buttons: ["Close", "Cancel"]) == 0
+    }
+
     enum SaveChoice { case save, discard, cancel }
 
     static func askToSave(_ documents: [EditorDocument]) -> SaveChoice {
