@@ -68,14 +68,6 @@ struct TermosCommands: Commands {
                 .keyboardShortcut(KeyEquivalent(Character(String(number))))
             }
 
-            Divider()
-
-            // Shown here for discoverability; AppState handles the keys itself so they
-            // also work in the editor, which would otherwise shift lines with them.
-            Button("Previous Terminal") { state.selectAdjacentSession(offset: -1) }
-                .keyboardShortcut("[")
-            Button("Next Terminal") { state.selectAdjacentSession(offset: 1) }
-                .keyboardShortcut("]")
         }
     }
 }

@@ -32,11 +32,9 @@ final class AppState {
 
     @ObservationIgnored let fileBrowserMemory = FileBrowserMemory()
     @ObservationIgnored private var directoryPollTimer: Timer?
-    @ObservationIgnored private var terminalSwitchMonitor: Any?
 
     init() {
         newSession()
-        installTerminalSwitchMonitor()
 
         // Files edited from the terminal (or elsewhere) while Termos was in the background.
         NotificationCenter.default.addObserver(
@@ -400,40 +398,11 @@ final class AppState {
         sessions.move(fromOffsets: source, toOffset: destination)
     }
 
-    /// Cmd+[ / Cmd+] switch terminals in the editor too. The editor shifts lines on
-    /// these keys from its own local event monitor, which runs before the menu.
-    /// AppKit calls local monitors in the order they were added, and this one is
-    /// added before any editor exists, so it gets the key first.
-    private func installTerminalSwitchMonitor() {
-        terminalSwitchMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            guard let self,
-                  event.modifierFlags.intersection([.command, .option, .control, .shift]) == .command,
-                  NSApp.modalWindow == nil, !(event.window is NSPanel), event.window?.attachedSheet == nil
-            else { return event }
-            switch event.charactersIgnoringModifiers {
-            case "[": MainActor.assumeIsolated { self.selectAdjacentSession(offset: -1) }
-            case "]": MainActor.assumeIsolated { self.selectAdjacentSession(offset: 1) }
-            default: return event
-            }
-            return nil
-        }
-    }
-
-    func selectAdjacentSession(offset: Int) {
-        guard let index = activeIndex, !sessions.isEmpty else { return }
-        let next = (index + offset + sessions.count) % sessions.count
-        activeSessionID = sessions[next].id
-    }
-
     /// The shortcut shown next to a terminal in the list, matching `selectSession(shortcut:)`.
     func shortcutNumber(for session: TerminalSession) -> Int? {
         guard let index = sessions.firstIndex(where: { $0.id == session.id }) else { return nil }
         if index < 8 { return index + 1 }
         return index == sessions.count - 1 ? 9 : nil
-    }
-
-    private var activeIndex: Int? {
-        sessions.firstIndex { $0.id == activeSessionID }
     }
 
     private func remove(_ session: TerminalSession) {

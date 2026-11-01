@@ -10,7 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillFinishLaunching(_ notification: Notification) {
-        // Cmd+[ / ] are ours (switching terminals), not window tabs.
+        // One window with its own terminal list; no window tabs or their shortcuts.
         NSWindow.allowsAutomaticWindowTabbing = false
     }
 
