@@ -6,6 +6,8 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-01
+
 ### Added
 - Closing a terminal with <kbd>⌘W</kbd> or Close Terminal in the sidebar's context menu asks for confirmation first. Typing `exit` still closes it without asking.
 
@@ -70,7 +72,8 @@ First release.
 - Go to file (<kbd>⌘P</kbd>), from the terminal and the editor.
 - Universal (Apple silicon and Intel), signed and notarized builds, published as a GitHub release for each version tag.
 
-[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/tkowalewski/Termos/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/tkowalewski/Termos/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/tkowalewski/Termos/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/tkowalewski/Termos/compare/v0.3.0...v0.4.0
