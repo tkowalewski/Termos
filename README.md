@@ -46,12 +46,6 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - Refuses binary files and files larger than 10 MB.
 - Find in file (<kbd>⌘F</kbd>), provided by the editor component.
 
-### Multiple cursors (VS Code style)
-- Add the next occurrence of the selection (<kbd>⌘D</kbd>), skip one (<kbd>⌘K</kbd> <kbd>⌘D</kbd>), select all occurrences (<kbd>⇧⌘L</kbd>), undo the last cursor (<kbd>⌘U</kbd>).
-- Add cursors with <kbd>⌥</kbd>-click or on the line above or below (<kbd>⌥⌘↑</kbd> / <kbd>⌥⌘↓</kbd>).
-- Typing, deleting and moving apply to every cursor. Copy joins the selections as lines. Pasting as many lines as there are cursors gives each cursor its own line.
-- <kbd>Esc</kbd> first collapses multiple cursors to one. The next <kbd>Esc</kbd> returns to the terminal.
-
 ### Go to file
 - <kbd>⌘P</kbd> opens a fuzzy finder for the active terminal's working directory. It works in the terminal and in the editor; the chosen file opens in the editor.
 - In a git repository it lists files with `git ls-files`, so `.gitignore` is respected. Elsewhere it walks the directory with the file browser's filters.
@@ -95,17 +89,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | <kbd>⌘R</kbd> | Review git changes |
 | <kbd>⌘S</kbd> | Save the file |
 | <kbd>⌘F</kbd> | Find in file |
-| <kbd>Esc</kbd> | Collapse multiple cursors; otherwise go back to the terminal |
-
-### Multiple cursors
-| Shortcut | Action |
-| --- | --- |
-| <kbd>⌘D</kbd> | Select the word, then add the next occurrence |
-| <kbd>⌘K</kbd> <kbd>⌘D</kbd> | Skip the current occurrence and add the next one |
-| <kbd>⇧⌘L</kbd> | Select all occurrences |
-| <kbd>⌘U</kbd> | Remove the last added cursor |
-| <kbd>⌥</kbd>-click | Add a cursor |
-| <kbd>⌥⌘↑</kbd> / <kbd>⌥⌘↓</kbd> | Add a cursor on the line above / below |
+| <kbd>Esc</kbd> | Go back to the terminal |
 
 ### Go to file and search in files
 | Shortcut | Action |

@@ -177,9 +177,6 @@ private struct EditorHostView: NSViewRepresentable {
 final class EditorContainerView: NSView {
     var onEscape: (() -> Void)?
     private weak var current: EditorDocument?
-    private var eventMonitor: Any?
-    /// Set after Cmd+K, waiting for the second key of the chord.
-    private var awaitingChord = false
     private var lastFocusRequest: Int?
 
     override init(frame frameRect: NSRect) {
@@ -215,10 +212,8 @@ final class EditorContainerView: NSView {
     }
 
     /// Esc reaches here through the responder chain when the editor does not use it
-    /// itself (the find panel and completions take it first). Several cursors
-    /// collapse to one first; only then Esc goes back to the terminal.
+    /// itself (the find panel and completions take it first) and goes back to the terminal.
     override func cancelOperation(_ sender: Any?) {
-        if current?.multiCursor.collapseToSingleCursor() == true { return }
         onEscape?()
     }
 
@@ -229,67 +224,7 @@ final class EditorContainerView: NSView {
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
-        updateEventMonitor()
         focusEditor()
-    }
-
-    // MARK: Multi-cursor input that menus cannot express
-
-    private func updateEventMonitor() {
-        if let eventMonitor {
-            NSEvent.removeMonitor(eventMonitor)
-            self.eventMonitor = nil
-        }
-        guard window != nil else { return }
-        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .leftMouseDown]) { [weak self] event in
-            self?.handle(event) ?? event
-        }
-    }
-
-    /// Handles Option+click, the Cmd+K Cmd+D chord and clipboard with several cursors.
-    /// Returns nil when the event was used.
-    private func handle(_ event: NSEvent) -> NSEvent? {
-        guard let document = current,
-              let textView = document.controller.textView,
-              event.window === window, window?.firstResponder === textView else {
-            awaitingChord = false
-            return event
-        }
-        let multiCursor = document.multiCursor
-        let flags = event.modifierFlags.intersection([.command, .option, .control, .shift])
-
-        if event.type == .leftMouseDown {
-            let point = textView.convert(event.locationInWindow, from: nil)
-            guard flags == .option, event.clickCount == 1, textView.bounds.contains(point),
-                  let offset = textView.layoutManager.textOffsetAtPoint(point) else { return event }
-            multiCursor.addCursor(at: offset)
-            return nil
-        }
-
-        let key = event.charactersIgnoringModifiers?.lowercased()
-        if awaitingChord {
-            awaitingChord = false
-            if flags == .command, key == "d" {
-                multiCursor.skipOccurrence()
-                return nil
-            }
-            return event
-        }
-
-        guard flags == .command else { return event }
-        switch key {
-        case "k":
-            awaitingChord = true
-            return nil
-        case "c":
-            return multiCursor.copy() ? nil : event
-        case "x":
-            return multiCursor.cut() ? nil : event
-        case "v":
-            return multiCursor.paste() ? nil : event
-        default:
-            return event
-        }
     }
 
     private func applyTheme() {

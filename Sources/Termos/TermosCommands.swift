@@ -45,25 +45,6 @@ struct TermosCommands: Commands {
             Divider()
         }
 
-        // Multiple cursors, with VS Code's shortcuts. Cmd+K Cmd+D (skip occurrence)
-        // is a chord, handled by the editor itself.
-        CommandMenu("Selection") {
-            Button("Add Next Occurrence") { state.activeDocument?.multiCursor.addNextOccurrence() }
-                .keyboardShortcut("d")
-            Button("Skip Occurrence (⌘K ⌘D)") { state.activeDocument?.multiCursor.skipOccurrence() }
-            Button("Select All Occurrences") { state.activeDocument?.multiCursor.selectAllOccurrences() }
-                .keyboardShortcut("l", modifiers: [.command, .shift])
-            Button("Undo Last Cursor") { state.activeDocument?.multiCursor.undoLastCursor() }
-                .keyboardShortcut("u")
-
-            Divider()
-
-            Button("Add Cursor Above") { state.activeDocument?.multiCursor.addCursor(above: true) }
-                .keyboardShortcut(.upArrow, modifiers: [.command, .option])
-            Button("Add Cursor Below") { state.activeDocument?.multiCursor.addCursor(above: false) }
-                .keyboardShortcut(.downArrow, modifiers: [.command, .option])
-        }
-
         // Cmd+H splits the terminal instead of hiding the app; Hide Termos stays in the app menu.
         CommandGroup(replacing: .appVisibility) {
             Button("Hide Termos") { NSApp.hide(nil) }

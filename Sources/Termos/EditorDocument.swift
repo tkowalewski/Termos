@@ -34,7 +34,6 @@ final class EditorDocument: Identifiable {
     @ObservationIgnored private let untitledName: String
 
     @ObservationIgnored let controller: TextViewController
-    @ObservationIgnored let multiCursor: MultiCursorController
     @ObservationIgnored private let changeTracker = ChangeTracker()
     @ObservationIgnored private var encoding: String.Encoding
     @ObservationIgnored private var diskModificationDate: Date?
@@ -70,7 +69,6 @@ final class EditorDocument: Identifiable {
             cursorPositions: [CursorPosition(line: 1, column: 1)],
             coordinators: [changeTracker]
         )
-        multiCursor = MultiCursorController(textView: controller.textView)
         changeTracker.onChange = { [weak self] in self?.isDirty = true }
     }
 

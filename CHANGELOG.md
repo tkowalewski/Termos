@@ -7,6 +7,7 @@ All notable changes to Termos are listed here, newest first. The format follows
 ## [Unreleased]
 
 ### Removed
+- Multiple cursors in the editor, with the Selection menu: add next occurrence (<kbd>⌘D</kbd>), skip occurrence (<kbd>⌘K</kbd> <kbd>⌘D</kbd>), select all occurrences (<kbd>⇧⌘L</kbd>), undo last cursor (<kbd>⌘U</kbd>), <kbd>⌥</kbd>-click and add cursor above / below (<kbd>⌥⌘↑</kbd> / <kbd>⌥⌘↓</kbd>). <kbd>Esc</kbd> in the editor always goes back to the terminal.
 - The <kbd>⌥⌘[</kbd> / <kbd>⌥⌘]</kbd> shortcuts for focusing the upper / lower pane of a split terminal. Click a pane to focus it, or use Focus Upper Pane / Focus Lower Pane in the Terminal menu.
 
 ## [0.6.0] - 2026-10-29
