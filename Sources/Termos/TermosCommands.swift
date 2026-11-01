@@ -70,10 +70,12 @@ struct TermosCommands: Commands {
 
             Divider()
 
+            // In the editor Cmd+[ / Cmd+] shift the selected lines left / right:
+            // the editor handles them before the menu sees the key.
             Button("Previous Terminal") { state.selectAdjacentSession(offset: -1) }
-                .keyboardShortcut("[", modifiers: [.command, .shift])
+                .keyboardShortcut("[")
             Button("Next Terminal") { state.selectAdjacentSession(offset: 1) }
-                .keyboardShortcut("]", modifiers: [.command, .shift])
+                .keyboardShortcut("]")
         }
     }
 }
