@@ -70,8 +70,8 @@ struct TermosCommands: Commands {
 
             Divider()
 
-            // In the editor Cmd+[ / Cmd+] shift the selected lines left / right:
-            // the editor handles them before the menu sees the key.
+            // Shown here for discoverability; AppState handles the keys itself so they
+            // also work in the editor, which would otherwise shift lines with them.
             Button("Previous Terminal") { state.selectAdjacentSession(offset: -1) }
                 .keyboardShortcut("[")
             Button("Next Terminal") { state.selectAdjacentSession(offset: 1) }

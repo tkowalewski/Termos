@@ -77,7 +77,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | <kbd>⌘W</kbd> | Close review mode or the open file in the editor, otherwise the focused pane of a split terminal, otherwise the terminal |
 | <kbd>⌘1</kbd> … <kbd>⌘8</kbd> | Switch to terminal 1–8 |
 | <kbd>⌘9</kbd> | Switch to the last terminal |
-| <kbd>⌘[</kbd> / <kbd>⌘]</kbd> | Previous / next terminal (in the editor they shift lines left / right) |
+| <kbd>⌘[</kbd> / <kbd>⌘]</kbd> | Previous / next terminal, also in the editor |
 
 ### Files and editor
 | Shortcut | Action |
@@ -90,7 +90,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | <kbd>⌘R</kbd> | Review git changes |
 | <kbd>⌘S</kbd> | Save the file |
 | <kbd>⌘F</kbd> | Find in file |
-| <kbd>⌘[</kbd> / <kbd>⌘]</kbd> | Shift the selected lines left / right |
+| <kbd>Tab</kbd> / <kbd>⇧Tab</kbd> | Indent / outdent the selected lines |
 | <kbd>Esc</kbd> | Go back to the terminal |
 
 ### Go to file and search in files

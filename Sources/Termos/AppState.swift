@@ -32,9 +32,11 @@ final class AppState {
 
     @ObservationIgnored let fileBrowserMemory = FileBrowserMemory()
     @ObservationIgnored private var directoryPollTimer: Timer?
+    @ObservationIgnored private var terminalSwitchMonitor: Any?
 
     init() {
         newSession()
+        installTerminalSwitchMonitor()
 
         // Files edited from the terminal (or elsewhere) while Termos was in the background.
         NotificationCenter.default.addObserver(
@@ -396,6 +398,25 @@ final class AppState {
     /// Reorders terminals dragged in the list; their shortcuts follow the new positions.
     func moveSessions(fromOffsets source: IndexSet, toOffset destination: Int) {
         sessions.move(fromOffsets: source, toOffset: destination)
+    }
+
+    /// Cmd+[ / Cmd+] switch terminals in the editor too. The editor shifts lines on
+    /// these keys from its own local event monitor, which runs before the menu.
+    /// AppKit calls local monitors in the order they were added, and this one is
+    /// added before any editor exists, so it gets the key first.
+    private func installTerminalSwitchMonitor() {
+        terminalSwitchMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self,
+                  event.modifierFlags.intersection([.command, .option, .control, .shift]) == .command,
+                  NSApp.modalWindow == nil, !(event.window is NSPanel), event.window?.attachedSheet == nil
+            else { return event }
+            switch event.charactersIgnoringModifiers {
+            case "[": MainActor.assumeIsolated { self.selectAdjacentSession(offset: -1) }
+            case "]": MainActor.assumeIsolated { self.selectAdjacentSession(offset: 1) }
+            default: return event
+            }
+            return nil
+        }
     }
 
     func selectAdjacentSession(offset: Int) {
