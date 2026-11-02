@@ -233,6 +233,13 @@ final class AppState {
         }
     }
 
+    /// Cmd+M: switches a Markdown file between its editor and the rendered preview.
+    func toggleMarkdownPreview() {
+        guard let document = activeDocument, document.isMarkdown else { return }
+        document.isPreviewingMarkdown.toggle()
+        mainFocusRequest += 1
+    }
+
     func saveActiveDocument() {
         guard let document = activeDocument else { return }
         save(document)

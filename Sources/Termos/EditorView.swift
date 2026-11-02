@@ -11,6 +11,7 @@ struct EditorView: View {
     let focusRequest: Int
     let onSelect: (EditorDocument) -> Void
     let onClose: (EditorDocument) -> Void
+    let onOpenFile: (URL) -> Void
     let onEscape: () -> Void
 
     var body: some View {
@@ -18,7 +19,16 @@ struct EditorView: View {
             EditorTabBar(workspace: workspace, onSelect: onSelect, onClose: onClose)
             Divider()
             if let document = workspace.activeDocument {
-                EditorHostView(document: document, focusRequest: focusRequest, onEscape: onEscape)
+                if document.isPreviewingMarkdown {
+                    MarkdownPreviewView(
+                        document: document,
+                        focusRequest: focusRequest,
+                        onOpenFile: onOpenFile,
+                        onEscape: onEscape
+                    )
+                } else {
+                    EditorHostView(document: document, focusRequest: focusRequest, onEscape: onEscape)
+                }
                 Divider()
                 EditorStatusBar(document: document, baseDirectory: baseDirectory)
             }

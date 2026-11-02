@@ -42,6 +42,8 @@ struct TermosCommands: Commands {
                 .keyboardShortcut("`")
             Button("Review Changes") { state.toggleReview() }
                 .keyboardShortcut("r")
+            Button("Toggle Markdown Preview") { state.toggleMarkdownPreview() }
+                .keyboardShortcut("m")
             Divider()
         }
 
@@ -51,6 +53,12 @@ struct TermosCommands: Commands {
             Button("Hide Others") { NSApp.hideOtherApplications(nil) }
                 .keyboardShortcut("h", modifiers: [.command, .option])
             Button("Show All") { NSApp.unhideAllApplications(nil) }
+        }
+
+        // Cmd+M is the Markdown preview; Minimize stays in the Window menu without a shortcut.
+        CommandGroup(replacing: .windowSize) {
+            Button("Minimize") { NSApp.keyWindow?.miniaturize(nil) }
+            Button("Zoom") { NSApp.keyWindow?.zoom(nil) }
         }
 
         CommandMenu("Terminal") {

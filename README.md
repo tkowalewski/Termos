@@ -50,6 +50,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - Asks before discarding unsaved changes when closing a file or terminal, and when quitting.
 - Refuses binary files and files larger than 10 MB.
 - Find in file (<kbd>⌘F</kbd>), provided by the editor component.
+- <kbd>⌘M</kbd> switches a Markdown file between the editor and a rendered preview (GitHub-flavored: tables, task lists, strikethrough, footnotes). Links to other files open them in the editor, web links in the browser. Minimize stays in the Window menu, without a shortcut.
 
 ### Go to file
 - <kbd>⌘P</kbd> opens a fuzzy finder for the active terminal's working directory. It works in the terminal and in the editor; the chosen file opens in the editor.
@@ -93,6 +94,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 | <kbd>⌘R</kbd> | Review git changes |
 | <kbd>⌘S</kbd> | Save the file |
 | <kbd>⌘F</kbd> | Find in file |
+| <kbd>⌘M</kbd> | Switch a Markdown file between the editor and the preview |
 | <kbd>⌘[</kbd> / <kbd>⌘]</kbd> | Shift the selected lines left / right |
 | <kbd>Esc</kbd> | Go back to the terminal |
 

@@ -6,6 +6,9 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+### Added
+- Markdown preview in the editor (<kbd>⌘M</kbd>): switches a `.md` file between the editor and its rendered, GitHub-flavored view (tables, task lists, strikethrough, footnotes), in light or dark mode. Links to other files open them in the editor, web links in the browser. Minimize is no longer on <kbd>⌘M</kbd>; it stays in the Window menu.
+
 ## [0.7.0] - 2026-11-01
 
 ### Added

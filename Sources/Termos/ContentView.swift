@@ -48,6 +48,7 @@ struct ContentView: View {
                             focusRequest: state.mainFocusRequest,
                             onSelect: { state.selectDocument($0) },
                             onClose: { state.closeDocument($0) },
+                            onOpenFile: { state.openFile($0) },
                             onEscape: { state.showTerminal() }
                         )
                     } else {

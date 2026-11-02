@@ -30,6 +30,10 @@ final class EditorDocument: Identifiable {
     let id = UUID()
     private(set) var url: URL?
     private(set) var isDirty = false
+    /// Shows the rendered Markdown instead of the editor (Cmd+M).
+    var isPreviewingMarkdown = false
+    /// Bumped when the text is replaced from disk, so the Markdown preview re-renders.
+    private(set) var textRevision = 0
     /// Shown in place of the file name while the document has no URL.
     @ObservationIgnored private let untitledName: String
 
@@ -41,6 +45,11 @@ final class EditorDocument: Identifiable {
     @ObservationIgnored private var pendingReveal: CursorPosition?
 
     var name: String { url?.lastPathComponent ?? untitledName }
+
+    var isMarkdown: Bool {
+        guard let url else { return false }
+        return ["md", "markdown", "mdown", "mkd"].contains(url.pathExtension.lowercased())
+    }
 
     var icon: NSImage {
         url.map { NSWorkspace.shared.icon(forFile: $0.path) } ?? NSWorkspace.shared.icon(for: .plainText)
@@ -117,6 +126,7 @@ final class EditorDocument: Identifiable {
         diskModificationDate = Self.modificationDate(of: url)
         controller.setText(text)
         isDirty = false
+        textRevision += 1
     }
 
     private static let trailingWhitespace = try! NSRegularExpression(pattern: "[ \\t]+$", options: .anchorsMatchLines)
