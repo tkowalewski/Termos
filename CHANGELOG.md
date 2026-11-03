@@ -9,6 +9,9 @@ All notable changes to Termos are listed here, newest first. The format follows
 ### Added
 - Markdown preview in the editor (<kbd>⌘M</kbd>): switches a `.md` file between the editor and its rendered, GitHub-flavored view (tables, task lists, strikethrough, footnotes), in light or dark mode. Links to other files open them in the editor, web links in the browser. Minimize is no longer on <kbd>⌘M</kbd>; it stays in the Window menu.
 
+### Changed
+- The editor no longer wraps long lines; scroll sideways to see them.
+
 ### Removed
 - The <kbd>⌘Q</kbd> shortcut for quitting, so a stray keystroke can't close every terminal. Quit Termos stays in the Termos menu.
 
