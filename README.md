@@ -39,7 +39,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 
 ### Editor
 - Opens in place of the terminal. The terminal keeps running behind it.
-- Syntax highlighting (tree-sitter) with Xcode-like light and dark themes.
+- Syntax highlighting (tree-sitter) with Xcode-like light and dark themes. ERB templates (`*.html.erb`, `*.js.erb`, …) get the Ruby in their tags highlighted on top of the template's language.
 - Long lines do not wrap; scroll sideways to see them.
 - Indents with two spaces: <kbd>Tab</kbd> and the automatic indentation after <kbd>Return</kbd> insert spaces, not tab characters.
 - Tabs for open files. A dot on a tab marks unsaved changes.

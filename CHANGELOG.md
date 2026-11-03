@@ -9,6 +9,7 @@ All notable changes to Termos are listed here, newest first. The format follows
 ### Added
 - Markdown preview in the editor (<kbd>⌘M</kbd>): switches a `.md` file between the editor and its rendered, GitHub-flavored view (tables, task lists, strikethrough, footnotes), in light or dark mode. Links to other files open them in the editor, web links in the browser. Minimize is no longer on <kbd>⌘M</kbd>; it stays in the Window menu.
 - <kbd>⌘</kbd>-click a file path in the terminal, such as `Sources/App.swift:12:5` from a compiler, `rg -n`, `git diff` or a stack trace, to open the file in the editor at that line and column. Relative paths are resolved against the working directory of the clicked pane. Folders and files the editor can't open open in their default app.
+- ERB templates highlight the Ruby in their tags (`<% %>`, `<%= %>`, comments in `<%# %>`), on top of the template's own language: HTML for `*.html.erb`, and likewise for other `*.erb` files such as `*.js.erb` or `*.yml.erb`.
 
 ### Changed
 - The editor no longer wraps long lines; scroll sideways to see them.

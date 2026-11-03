@@ -71,13 +71,17 @@ final class EditorDocument: Identifiable {
         self.encoding = encoding
         diskModificationDate = url.flatMap(Self.modificationDate(of:))
 
+        let erbHighlighter = ERBHighlighter()
         controller = TextViewController(
             string: text,
             language: url.map { Self.language(for: $0, text: text) } ?? .default,
             configuration: EditorAppearance.configuration(for: NSApp.effectiveAppearance),
             cursorPositions: [CursorPosition(line: 1, column: 1)],
+            // The ERB highlighter goes first: inside ERB tags its Ruby colors win.
+            highlightProviders: [erbHighlighter, TreeSitterClient()],
             coordinators: [changeTracker]
         )
+        erbHighlighter.isEnabled = { [weak self] in self?.url.map(Self.isERB) ?? false }
         changeTracker.onChange = { [weak self] in self?.isDirty = true }
     }
 
@@ -100,17 +104,25 @@ final class EditorDocument: Identifiable {
     }
 
     /// Detects the language from the file name, covering Ruby files that
-    /// CodeEditLanguages only knows by the `.rb` extension. ERB templates get
-    /// HTML: there is no grammar for the embedded Ruby.
+    /// CodeEditLanguages only knows by the `.rb` extension. ERB templates get the
+    /// language of the name without `.erb` (HTML for `.html.erb`); the Ruby in their
+    /// tags is highlighted by `ERBHighlighter`.
     private static func language(for url: URL, text: String) -> CodeLanguage {
         let name = url.lastPathComponent.lowercased()
         if name == "gemfile" || url.pathExtension.lowercased() == "gemspec" {
             return .ruby
         }
-        if name.hasSuffix(".html.erb") {
-            return .html
+        if isERB(url) {
+            let template = url.deletingPathExtension()
+            return template.pathExtension.isEmpty
+                ? .default
+                : CodeLanguage.detectLanguageFrom(url: template, prefixBuffer: String(text.prefix(256)))
         }
         return CodeLanguage.detectLanguageFrom(url: url, prefixBuffer: String(text.prefix(256)))
+    }
+
+    private static func isERB(_ url: URL) -> Bool {
+        url.pathExtension.lowercased() == "erb"
     }
 
     /// Whether the file on disk changed since it was opened, saved or reloaded here.
