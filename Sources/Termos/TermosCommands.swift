@@ -55,6 +55,11 @@ struct TermosCommands: Commands {
             Button("Show All") { NSApp.unhideAllApplications(nil) }
         }
 
+        // No Cmd+Q, so a stray keystroke cannot kill every shell; Quit stays in the app menu.
+        CommandGroup(replacing: .appTermination) {
+            Button("Quit Termos") { NSApp.terminate(nil) }
+        }
+
         // Cmd+M is the Markdown preview; Minimize stays in the Window menu without a shortcut.
         CommandGroup(replacing: .windowSize) {
             Button("Minimize") { NSApp.keyWindow?.miniaturize(nil) }
