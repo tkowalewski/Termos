@@ -24,6 +24,7 @@ The main window is an ordinary terminal. When you need to look at or change a fi
 - Click the name of the active terminal (or use Rename Terminal in its context menu) to rename it. An empty name brings back the title set by the shell.
 - <kbd>⌥</kbd> types characters from your keyboard layout (e.g. <kbd>⌥L</kbd> gives `ł` on the Polish layout) instead of acting as Meta. <kbd>⌥←</kbd> / <kbd>⌥→</kbd> still jump by word.
 - <kbd>⌘H</kbd> splits the terminal into an upper and a lower pane, each with its own shell. The new shell starts in the working directory of the current one. Click a pane to focus it; the file browser, go to file and search in files follow the focused pane. Hide Termos stays in the Termos menu, without a shortcut.
+- <kbd>⌘</kbd>-click a file path in the output, such as `Sources/App.swift:12:5` from a compiler, `rg -n`, `git diff` or a stack trace, to open the file in the editor at that line and column. Relative paths are resolved against the working directory of the clicked pane. Holding <kbd>⌘</kbd> underlines the path under the pointer. Folders and files the editor can't open (binary, larger than 10 MB) open in their default app, and web links in the browser.
 - Typing `exit` in the shell closes its pane, or its terminal when it is not split. Closing the last terminal quits the app.
 - Closing a terminal with <kbd>⌘W</kbd> or Close Terminal in its context menu asks first. `exit` closes it without asking.
 
@@ -156,7 +157,7 @@ swift scripts/make-icon.swift
 
 | Path | Contents |
 | --- | --- |
-| `Sources/Termos/` | The app: state (`AppState`), terminals, file browser, editor, multiple cursors, go to file, search in files |
+| `Sources/Termos/` | The app: state (`AppState`), terminals, file browser, editor, go to file, search in files |
 | `Sources/Termos/Resources/` | App icon |
 | `Vendor/CodeEditTextView/` | Patched copy of CodeEditTextView (see its README) |
 | `scripts/bundle.sh` | Builds `build/Termos.app` |

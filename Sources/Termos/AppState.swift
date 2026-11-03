@@ -201,6 +201,32 @@ final class AppState {
         }
     }
 
+    /// Cmd+click on a path in the terminal: opens the file in the editor, at the line and
+    /// column when the link names them. Directories and files the editor refuses (binary,
+    /// too large) open in their default app instead.
+    func open(_ link: TerminalFileLink, in session: TerminalSession) {
+        guard session.id == activeSessionID else { return }
+        if link.isDirectory {
+            NSWorkspace.shared.open(link.url)
+            return
+        }
+        hideReview()
+        do {
+            try session.editor.open(link.url)
+        } catch is EditorDocumentError {
+            NSWorkspace.shared.open(link.url)
+            return
+        } catch {
+            Alerts.show(error)
+            return
+        }
+        checkActiveDocumentOnDisk()
+        if let line = link.line, let document = activeDocument, document.url == link.url {
+            document.reveal(line: line, column: link.column ?? 1, length: 0)
+        }
+        mainFocusRequest += 1
+    }
+
     /// Cmd+N: a new, empty file in the editor. Where it goes is asked on the first save.
     func newDocument() {
         guard let editor = activeSession?.editor else { return }
@@ -352,6 +378,7 @@ final class AppState {
             _ = self?.resolveUnsavedDocuments(in: session)
             self?.remove(session)
         }
+        session.onOpenFile = { [weak self] session, link in self?.open(link, in: session) }
         sessions.append(session)
         activeSessionID = session.id
     }

@@ -47,6 +47,8 @@ final class TerminalSession: Identifiable {
 
     /// Called when the shell of the last pane exits.
     @ObservationIgnored var onExit: ((TerminalSession) -> Void)?
+    /// Called when a file or directory named in the output is Cmd+clicked.
+    @ObservationIgnored var onOpenFile: ((TerminalSession, TerminalFileLink) -> Void)?
 
     init(startDirectory: URL?) {
         shellName = (Self.loginShell() as NSString).lastPathComponent
@@ -70,8 +72,11 @@ final class TerminalSession: Identifiable {
 
     /// The focused pane's working directory: read straight from its process, falling back to OSC 7.
     func currentDirectory() -> URL? {
-        let pane = focusedPane
-        return ProcessDirectory.currentDirectory(of: pane.process.shellPid)
+        directory(of: focusedPane)
+    }
+
+    private func directory(of pane: LocalProcessTerminalView) -> URL? {
+        ProcessDirectory.currentDirectory(of: pane.process.shellPid)
             ?? reportedDirectories[ObjectIdentifier(pane)]
     }
 
@@ -82,7 +87,8 @@ final class TerminalSession: Identifiable {
 
     private func makePane(directory: URL?) -> LocalProcessTerminalView {
         let shell = Self.loginShell()
-        let pane = LocalProcessTerminalView(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
+        let pane = TermosTerminalView(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
+        pane.onOpenLink = { [weak self] pane, link in self?.openLink(link, from: pane) }
         pane.font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
         pane.processDelegate = self
         // Option types characters (e.g. Option+L = "ł" on the Polish layout) instead of acting as Meta.
@@ -98,6 +104,18 @@ final class TerminalSession: Identifiable {
             currentDirectory: directory?.path ?? FileManager.default.homeDirectoryForCurrentUser.path
         )
         return pane
+    }
+
+    /// Cmd+click on a link: files and directories are resolved against the clicked pane's
+    /// working directory and handed to the app; web links open in the browser.
+    private func openLink(_ link: String, from pane: LocalProcessTerminalView) {
+        if let fileLink = TerminalFileLink(link, relativeTo: directory(of: pane)) {
+            onOpenFile?(self, fileLink)
+        } else if let url = URL(string: link), let scheme = url.scheme, scheme != "file" {
+            NSWorkspace.shared.open(url)
+        } else {
+            NSSound.beep()
+        }
     }
 
     private func remove(_ pane: LocalProcessTerminalView) {
