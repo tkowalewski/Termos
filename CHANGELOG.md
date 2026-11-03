@@ -6,6 +6,8 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-03
+
 ### Added
 - Markdown preview in the editor (<kbd>⌘M</kbd>): switches a `.md` file between the editor and its rendered, GitHub-flavored view (tables, task lists, strikethrough, footnotes), in light or dark mode. Links to other files open them in the editor, web links in the browser. Minimize is no longer on <kbd>⌘M</kbd>; it stays in the Window menu.
 - <kbd>⌘</kbd>-click a file path in the terminal, such as `Sources/App.swift:12:5` from a compiler, `rg -n`, `git diff` or a stack trace, to open the file in the editor at that line and column. Relative paths are resolved against the working directory of the clicked pane. Folders and files the editor can't open open in their default app.
@@ -83,7 +85,8 @@ First release.
 - Go to file (<kbd>⌘P</kbd>), from the terminal and the editor.
 - Universal (Apple silicon and Intel), signed and notarized builds, published as a GitHub release for each version tag.
 
-[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/tkowalewski/Termos/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/tkowalewski/Termos/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/tkowalewski/Termos/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/tkowalewski/Termos/compare/v0.4.0...v0.5.0
