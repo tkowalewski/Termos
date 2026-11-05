@@ -141,6 +141,18 @@ final class AppState {
         mainFocusRequest += 1
     }
 
+    // MARK: Terminal find
+
+    /// Cmd+F / Cmd+G / Shift+Cmd+G: SwiftTerm's own find bar in the focused pane.
+    /// The editor catches Cmd+F itself before the menu sees it, so this only runs
+    /// for the terminal.
+    func performTerminalFind(_ action: NSTextFinder.Action) {
+        guard let session = activeSession, session.review == nil, !session.editor.isVisible else { return }
+        let item = NSMenuItem()
+        item.tag = action.rawValue
+        session.focusedPane.performTextFinderAction(item)
+    }
+
     // MARK: Content search
 
     /// Cmd+E: searches the contents of the files under the active terminal's working

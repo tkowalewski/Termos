@@ -74,6 +74,15 @@ struct TermosCommands: Commands {
 
             Divider()
 
+            Button("Find…") { state.performTerminalFind(.showFindInterface) }
+                .keyboardShortcut("f")
+            Button("Find Next") { state.performTerminalFind(.nextMatch) }
+                .keyboardShortcut("g")
+            Button("Find Previous") { state.performTerminalFind(.previousMatch) }
+                .keyboardShortcut("g", modifiers: [.command, .shift])
+
+            Divider()
+
             ForEach(1...9, id: \.self) { number in
                 Button(number == 9 ? "Last Terminal" : "Terminal \(number)") {
                     state.selectSession(shortcut: number)
