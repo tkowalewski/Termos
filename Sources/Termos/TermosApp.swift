@@ -6,12 +6,38 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard let state else { return .terminateNow }
-        return MainActor.assumeIsolated { state.resolveAllUnsavedDocuments() } ? .terminateNow : .terminateCancel
+        let canQuit = MainActor.assumeIsolated {
+            // No terminals left means the last one was just closed, which already asked.
+            (state.sessions.isEmpty || Alerts.confirmQuit(terminalCount: state.sessions.count))
+                && state.resolveAllUnsavedDocuments()
+        }
+        return canQuit ? .terminateNow : .terminateCancel
+    }
+
+    /// The window's close button quits instead of closing the window, so the quit
+    /// confirmation comes before the window (and every terminal in it) is gone.
+    @objc private func closeButtonClicked(_ sender: Any?) {
+        NSApp.terminate(sender)
+    }
+
+    private func retargetCloseButton(of window: NSWindow) {
+        guard let button = window.standardWindowButton(.closeButton), button.target !== self else { return }
+        button.target = self
+        button.action = #selector(closeButtonClicked(_:))
     }
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         // One window with its own terminal list; no window tabs or their shortcuts.
         NSWindow.allowsAutomaticWindowTabbing = false
+
+        // SwiftUI creates the window later and owns its delegate, so the close button is
+        // taken over once the window shows up.
+        NotificationCenter.default.addObserver(
+            forName: NSWindow.didBecomeMainNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let window = notification.object as? NSWindow else { return }
+            MainActor.assumeIsolated { self?.retargetCloseButton(of: window) }
+        }
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {

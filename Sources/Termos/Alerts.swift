@@ -44,6 +44,15 @@ enum Alerts {
             buttons: ["Close", "Cancel"]) == 0
     }
 
+    /// Returns true when the user chose to quit, which ends every terminal.
+    static func confirmQuit(terminalCount: Int) -> Bool {
+        ask("Quit Termos?",
+            info: terminalCount == 1
+                ? "The terminal and the programs running in it will be terminated."
+                : "All \(terminalCount) terminals and the programs running in them will be terminated.",
+            buttons: ["Quit", "Cancel"]) == 0
+    }
+
     enum SaveChoice { case save, discard, cancel }
 
     static func askToSave(_ documents: [EditorDocument]) -> SaveChoice {

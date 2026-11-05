@@ -6,6 +6,9 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+### Added
+- Quitting Termos, with Quit Termos or the window's close button, asks for confirmation first, since it ends every terminal.
+
 ## [0.8.0] - 2026-11-03
 
 ### Added
