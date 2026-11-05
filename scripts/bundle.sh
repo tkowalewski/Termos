@@ -2,7 +2,7 @@
 # Builds Termos and wraps the executable into build/Termos.app.
 # Usage: scripts/bundle.sh [debug|release]   (default: release)
 #
-# Release builds are universal (arm64 + x86_64); debug builds are for this Mac only.
+# Release builds are for Apple silicon (arm64); debug builds are for this Mac only.
 # Signs with $TERMOS_SIGN_IDENTITY (e.g. "Developer ID Application: Name (TEAMID)"),
 # or ad-hoc when it is not set. $TERMOS_VERSION and $TERMOS_BUILD set the version shown
 # in Finder (default: 0.1.0, build 1).
@@ -16,10 +16,8 @@ VERSION="${TERMOS_VERSION:-0.1.0}"
 BUILD="${TERMOS_BUILD:-1}"
 
 if [ "$CONFIG" = release ]; then
-    # Needs Xcode 27: with several --arch flags, Xcode 26 (Swift 6.2) falls back to XCBuild,
-    # which cannot run the packages' build plugins, and its default build system cannot
-    # compile CodeEditSymbols' asset catalog.
-    ARCH_FLAGS="--arch arm64 --arch x86_64"
+    # Explicit, so a release built on an Intel Mac is still for Apple silicon.
+    ARCH_FLAGS="--arch arm64"
 else
     ARCH_FLAGS=""
 fi

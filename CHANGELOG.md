@@ -11,6 +11,9 @@ All notable changes to Termos are listed here, newest first. The format follows
 - Find in the terminal (<kbd>⌘F</kbd>): searches the focused pane's output and scrollback, with Find Next / Find Previous (<kbd>⌘G</kbd> / <kbd>⇧⌘G</kbd>) in the Terminal menu.
 - Open… (<kbd>⌘O</kbd>), from the terminal or the editor: picks one or more files to open in the editor, starting in the active terminal's working directory.
 
+### Removed
+- Support for Intel Macs: release builds are for Apple silicon only.
+
 ## [0.8.0] - 2026-11-03
 
 ### Added

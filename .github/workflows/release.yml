@@ -26,7 +26,7 @@ jobs:
       - name: Choose keychain path
         run: echo "KEYCHAIN=$RUNNER_TEMP/signing.keychain-db" >> "$GITHUB_ENV"
 
-      # Universal builds need Xcode 27 (see scripts/bundle.sh). Pinned to a release:
+      # Pinned to a release:
       # the image defaults to 27.0 and also carries betas.
       - name: Select Xcode 27.1
         run: |
