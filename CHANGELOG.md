@@ -6,6 +6,8 @@ All notable changes to Termos are listed here, newest first. The format follows
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-05
+
 ### Added
 - Quitting Termos, with Quit Termos or the window's close button, asks for confirmation first, since it ends every terminal.
 - Find in the terminal (<kbd>⌘F</kbd>): searches the focused pane's output and scrollback, with Find Next / Find Previous (<kbd>⌘G</kbd> / <kbd>⇧⌘G</kbd>) in the Terminal menu.
@@ -96,7 +98,8 @@ First release.
 - Go to file (<kbd>⌘P</kbd>), from the terminal and the editor.
 - Universal (Apple silicon and Intel), signed and notarized builds, published as a GitHub release for each version tag.
 
-[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/tkowalewski/Termos/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/tkowalewski/Termos/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/tkowalewski/Termos/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/tkowalewski/Termos/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/tkowalewski/Termos/compare/v0.5.0...v0.6.0
