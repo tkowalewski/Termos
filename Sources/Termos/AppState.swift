@@ -23,6 +23,14 @@ final class AppState {
     }
     /// Working directory of the active terminal, shown in the file browser.
     private(set) var fileBrowserRoot: URL?
+    /// Working directory of the active terminal's focused pane, kept current even
+    /// while the file browser is hidden.
+    private(set) var activeDirectory: URL?
+
+    /// The window title: where the active terminal is, as `~/…` under the home folder.
+    var windowTitle: String {
+        activeDirectory.map { ($0.path as NSString).abbreviatingWithTildeInPath } ?? "Termos"
+    }
     /// Bumped whenever the terminal or editor should take keyboard focus back.
     private(set) var mainFocusRequest = 0
     /// The Cmd+P file finder, while it is open.
@@ -70,24 +78,23 @@ final class AppState {
         requestMainFocus()
     }
 
-    /// Follows `cd` in the active terminal while its browser is visible, and only then.
+    /// Follows `cd` in the active terminal, for the window title. There is no event for
+    /// it, so the shell's directory is read twice a second.
     private func updateDirectoryPolling() {
-        guard isFileBrowserVisible else {
-            directoryPollTimer?.invalidate()
-            directoryPollTimer = nil
-            return
-        }
-        refreshFileBrowserRoot()
+        refreshDirectories()
         guard directoryPollTimer == nil else { return }
         directoryPollTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.refreshFileBrowserRoot() }
+            MainActor.assumeIsolated { self?.refreshDirectories() }
         }
     }
 
-    private func refreshFileBrowserRoot() {
-        guard isFileBrowserVisible,
-              let directory = activeSession?.currentDirectory(),
-              directory.path != fileBrowserRoot?.path else { return }
+    /// The file browser follows the directory only while it is visible.
+    private func refreshDirectories() {
+        let directory = activeSession?.currentDirectory()
+        if directory?.path != activeDirectory?.path {
+            activeDirectory = directory
+        }
+        guard isFileBrowserVisible, let directory, directory.path != fileBrowserRoot?.path else { return }
         fileBrowserRoot = directory
     }
 
@@ -321,7 +328,7 @@ final class AppState {
             closeDocument(document)
         } else if let session = activeSession, session.isSplit {
             session.closeFocusedPane()
-            refreshFileBrowserRoot()
+            refreshDirectories()
             mainFocusRequest += 1
         } else {
             closeActiveSession()
@@ -429,7 +436,7 @@ final class AppState {
         guard let session = activeSession, session.isSplit, session.review == nil,
               !session.editor.isVisible, session.panes.indices.contains(index) else { return }
         session.focusedPaneIndex = index
-        refreshFileBrowserRoot()
+        refreshDirectories()
         mainFocusRequest += 1
     }
 
