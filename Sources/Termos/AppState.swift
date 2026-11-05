@@ -202,6 +202,22 @@ final class AppState {
         return editor.activeDocument
     }
 
+    /// Cmd+O, from the terminal or the editor: picks files to open in the editor,
+    /// starting in the active terminal's working directory.
+    func showOpenPanel() {
+        guard activeSession != nil else { return }
+        quickOpen = nil
+        contentSearch = nil
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = true
+        panel.directoryURL = activeSession?.currentDirectory()
+        guard panel.runModal() == .OK else { return }
+        for url in panel.urls { openFile(url) }
+        mainFocusRequest += 1
+    }
+
     func openFile(_ url: URL) {
         guard let editor = activeSession?.editor else { return }
         hideReview()

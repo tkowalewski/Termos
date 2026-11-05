@@ -17,6 +17,8 @@ struct TermosCommands: Commands {
                 .keyboardShortcut("t")
             Button("New File") { state.newDocument() }
                 .keyboardShortcut("n")
+            Button("Open…") { state.showOpenPanel() }
+                .keyboardShortcut("o")
             Button("Close") { state.closeActiveItem() }
                 .keyboardShortcut("w")
         }
